@@ -49,7 +49,7 @@ function LoginContent() {
         toast.success(t("auth.loginSuccess"));
         router.replace(redirectTarget === "null" ? "/" : redirectTarget);
       } else {
-        toast.error(t(res.error || "auth.loginFailed"));
+        toast.error("Invalid email or password");
       }
     } else if (mode === "forgot") {
       const { error } = await supabase.auth.signInWithOtp({

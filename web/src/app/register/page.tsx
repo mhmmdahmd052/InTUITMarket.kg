@@ -46,7 +46,7 @@ function RegisterContent() {
       toast.success(t("auth.registerSuccess"));
       router.replace(redirectTarget);
     } else {
-      toast.error(t(res.error || "auth.registerFailed"));
+      toast.error("Registration failed. Please check your details and try again.");
     }
   };
 
