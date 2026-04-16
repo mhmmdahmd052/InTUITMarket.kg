@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'InTUITMarket <your_verified_email@gmail.com>',
       to: adminEmail ? [customerEmail, adminEmail] : [customerEmail],
       subject: 'Order Confirmation - InTUITMarket',
       html: `

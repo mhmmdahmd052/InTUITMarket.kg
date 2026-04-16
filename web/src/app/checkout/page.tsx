@@ -79,15 +79,15 @@ export default function CheckoutPage() {
       
       try {
         await fetch('/api/send-order', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            ...newOrder,
-            name: newOrder.shippingDetails.fullName
-          })
-        });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    ...newOrder,
+    name: newOrder.shippingDetails.fullName
+  })
+});
       } catch (err) {
         console.error("Failed to send order email:", err);
       }

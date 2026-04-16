@@ -59,7 +59,7 @@ function LoginContent() {
         },
       });
       if (error) {
-        toast.error(error.message);
+        toast.error("Invalid email or password");
         return;
       }
       toast.success(t("auth.codeSent"));
