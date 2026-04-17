@@ -11,11 +11,11 @@ export async function POST(req: Request) {
     const adminEmail = process.env.ADMIN_EMAIL
 
     if (!customerEmail) {
-      return NextResponse.json({ error: 'Missing customer email' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing email' }, { status: 400 })
     }
 
     await resend.emails.send({
-      from: 'InTUITMarket <your_verified_email@gmail.com>',
+      from: 'onboarding@resend.dev',
       to: adminEmail ? [customerEmail, adminEmail] : [customerEmail],
       subject: 'Order Confirmation - InTUITMarket',
       html: `
