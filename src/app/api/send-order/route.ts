@@ -7,21 +7,20 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
 
-    const customerEmail = body?.shippingDetails?.email
-    const adminEmail = process.env.ADMIN_EMAIL
+    const email = body?.shippingDetails?.email
 
-    if (!customerEmail) {
+    if (!email) {
       return NextResponse.json({ error: 'Missing email' }, { status: 400 })
     }
 
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: adminEmail ? [customerEmail, adminEmail] : [customerEmail],
-      subject: 'Order Confirmation - InTUITMarket',
+      from: 'InTUIT Market <orders@intuitmarket.store>',
+      to: email,
+      subject: 'Order Confirmation',
       html: `
-        <h2>Order Confirmed</h2>
-        <p><strong>Name:</strong> ${body.name || 'Customer'}</p>
-        <p><strong>Total:</strong> ${Number(body.totalAmount || 0).toLocaleString()}</p>
+        <h2>Order Received</h2>
+        <p>Name: ${body.name || 'Customer'}</p>
+        <p>Total: ${Number(body.totalAmount || 0).toLocaleString()}</p>
         <p>Status: Processing</p>
       `
     })
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true })
 
   } catch (err) {
-    console.error('EMAIL ERROR:', err)
+    console.error("EMAIL ERROR:", err)
     return NextResponse.json({ error: 'Email failed' }, { status: 500 })
   }
 }
