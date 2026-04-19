@@ -1,24 +1,77 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
+import { getOrder, updateOrderStatus } from '@/lib/serverOrderStore';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const SUBJECT_MAP: Record<string, string> = {
+  processing: "Order Received – InTUITMarket",
+  shipped: "Your Order Has Shipped – InTUITMarket",
+  out_for_delivery: "Out for Delivery – InTUITMarket",
+  delivered: "Order Delivered – InTUITMarket"
+};
+
+const MESSAGE_MAP: Record<string, string> = {
+  processing: "Your order is being processed by our warehouse ensemble.",
+  shipped: "Your order has been dispatched and is on its way to you.",
+  out_for_delivery: "Your order is with the courier and will arrive shortly.",
+  delivered: "Your order has been successfully delivered. Thank you for choosing InTUIT Market."
+};
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const { orderId, status, email } = await req.json();
 
-    // Assuming NEXT_PUBLIC_BASE_URL is set in environment
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/send-order`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    })
-
-    if (!res.ok) {
-        throw new Error('Failed to send order email via inner API')
+    if (!orderId || !status || !email) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    return NextResponse.json({ success: true })
+    // 1. Update status in persistence layer
+    await updateOrderStatus(orderId, status);
+
+    // 2. Fetch updated order for email context
+    const order = await getOrder(orderId);
+    
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    // 3. Send Status Update Email
+    const subject = SUBJECT_MAP[status] || 'Order Update – InTUITMarket';
+    const message = MESSAGE_MAP[status] || 'Your order status has been updated.';
+
+    await resend.emails.send({
+      from: 'InTUIT Market <orders@intuitmarket.store>',
+      to: email,
+      subject: subject,
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
+          <h1 style="color: #2563eb;">Order Status Update</h1>
+          <p>Hello,</p>
+          <p>The status of your order <strong>#${orderId}</strong> has changed.</p>
+          
+          <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
+            <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin-bottom: 10px;">New Status</p>
+            <p style="font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0;">${status.replace(/_/g, ' ')}</p>
+          </div>
+
+          <p style="font-size: 1.1rem;">${message}</p>
+
+          <div style="margin-top: 30px; padding: 20px; border-top: 1px solid #eee;">
+             <p><strong>Order Summary Total:</strong> ${Number(order.total).toLocaleString()} ₸</p>
+          </div>
+
+          <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #666; text-align: center;">
+            <p>&copy; ${new Date().getFullYear()} InTUIT Market. Order Persistence System.</p>
+          </footer>
+        </div>
+      `
+    });
+
+    return NextResponse.json({ success: true, newStatus: status });
 
   } catch (err) {
-    console.error('Status update error:', err)
-    return NextResponse.json({ error: 'Status update failed' }, { status: 500 })
+    console.error("STATUS UPDATE API ERROR:", err);
+    return NextResponse.json({ error: 'Failed to update status' }, { status: 500 });
   }
 }
