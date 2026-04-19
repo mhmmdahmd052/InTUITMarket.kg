@@ -20,18 +20,15 @@ export default async function HomePage() {
 
     return (
       <div style={{ padding: 20 }}>
-        <h1>DEBUG MODE — DATA CHECK</h1>
-        <pre style={{ fontSize: 12, overflow: "auto" }}>
-          {JSON.stringify(projects?.slice(0, 2), null, 2)}
-        </pre>
+        <h1>DEBUG MODE</h1>
+        <pre>{JSON.stringify(projects?.slice(0, 2), null, 2)}</pre>
       </div>
     );
   } catch (err) {
     return (
       <div style={{ padding: 20, color: "red" }}>
-        <h1>SERVER ERROR CAUGHT</h1>
+        <h1>SERVER ERROR</h1>
         <pre>{String(err)}</pre>
-        <pre>{err instanceof Error ? err.stack : ""}</pre>
       </div>
     );
   }
