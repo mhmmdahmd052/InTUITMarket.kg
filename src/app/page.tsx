@@ -1,38 +1,38 @@
 import { client } from "@/sanity/client";
-import HomeContent from "@/components/home/HomeContent";
 
 async function getHomePageData() {
-  try {
-    const query = `*[_type == "project"]{
-      _id,
-      name,
-      slug,
-      "imageUrl": image.asset->url
-    }`;
-
-    const products = await client.fetch(query);
-    return products?.slice(0, 4) || [];
-
-  } catch (err) {
-    console.error("SANITY ERROR:", err);
-    return [];
-  }
+  const query = `*[_type == "project"] | order(_createdAt desc) [0...4] {
+    _id,
+    name,
+    description,
+    status,
+    price,
+    category,
+    slug,
+    "imageUrl": image.asset->url
+  }`;
+  return await client.fetch(query);
 }
 
 export default async function HomePage() {
-  const projects = await getHomePageData();
+  try {
+    const projects = await getHomePageData();
 
-  if (!projects || projects.length === 0) {
     return (
-      <div style={{padding: "40px", textAlign: "center"}}>
-        Loading...
+      <div style={{ padding: 20 }}>
+        <h1>DEBUG MODE — DATA CHECK</h1>
+        <pre style={{ fontSize: 12, overflow: "auto" }}>
+          {JSON.stringify(projects?.slice(0, 2), null, 2)}
+        </pre>
+      </div>
+    );
+  } catch (err) {
+    return (
+      <div style={{ padding: 20, color: "red" }}>
+        <h1>SERVER ERROR CAUGHT</h1>
+        <pre>{String(err)}</pre>
+        <pre>{err instanceof Error ? err.stack : ""}</pre>
       </div>
     );
   }
-
-  return (
-    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
-      <HomeContent projects={projects} />
-    </div>
-  );
 }
