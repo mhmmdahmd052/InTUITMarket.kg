@@ -1,20 +1,21 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@tailwind base {
-  /* Standard Typography & Colors - FALLBACK SYSTEM */
-  :root {
-    --background: #ffffff;
-    --foreground: #111827; /* gray-900 */
-    --font-body: 'Inter', system-ui, sans-serif;
-  }
+@custom-variant dark (&:is(.dark *));
 
-  .dark {
-    --background: #030712; /* gray-950 */
-    --foreground: #f9fafb; /* gray-50 */
-  }
+/* Standard Typography & Colors - FALLBACK SYSTEM */
+:root {
+  --background: #ffffff;
+  --foreground: #111827; /* gray-900 */
+  --font-body: 'Inter', system-ui, sans-serif;
+}
 
+.dark {
+  --background: #030712; /* gray-950 */
+  --foreground: #f9fafb; /* gray-50 */
+}
+
+@layer base {
   html {
     font-size: 16px;
     -webkit-tap-highlight-color: transparent;
@@ -38,5 +39,9 @@
 @layer utilities {
   .glass-effect {
     @apply backdrop-blur-md bg-white/70 dark:bg-gray-950/70;
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 }

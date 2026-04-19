@@ -4,11 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('[SUPABASE CONFIG ERROR] Missing environment variables. Auth will be disabled.');
+  throw new Error('[FATAL] Missing Supabase environment variables');
 }
 
-// Ensure we don't throw at the top level to prevent SSR crash
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder-project.supabase.co', 
-  supabaseAnonKey || 'placeholder-key'
-);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

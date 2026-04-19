@@ -1,51 +1,38 @@
 import { client } from "@/sanity/client";
 import HomeContent from "@/components/home/HomeContent";
 
-// Ensure the page is always dynamic to fetch live data in production
-export const dynamic = 'force-dynamic';
-
 async function getHomePageData() {
   try {
-    const query = `*[_type == "project"] | order(_createdAt desc) [0...4] {
+    const query = `*[_type == "project"]{
       _id,
       name,
-      description,
-      status,
-      price,
-      category,
       slug,
       "imageUrl": image.asset->url
     }`;
-    const products = await client.fetch(query).catch((e: any) => {
-      console.error("Sanity Fetch Error:", e);
-      return [];
-    });
-    return Array.isArray(products) ? products : [];
+
+    const products = await client.fetch(query);
+    return products?.slice(0, 4) || [];
+
   } catch (err) {
-    console.error("getHomePageData Fatal Error:", err);
+    console.error("SANITY ERROR:", err);
     return [];
   }
 }
 
-export default async function Page() {
-  try {
-    const projects = await getHomePageData();
+export default async function HomePage() {
+  const projects = await getHomePageData();
 
+  if (!projects || projects.length === 0) {
     return (
-      <HomeContent projects={projects} />
-    );
-
-  } catch (err) {
-    // Graceful server-side fallback if the entire component tree fails
-    return (
-      <div style={{ padding: '60px', background: '#0a0a0a', color: '#ef4444', minHeight: '100vh', fontFamily: 'monospace' }}>
-        <h1 style={{ marginBottom: '20px' }}>InTUITMarket</h1>
-        <div style={{ background: '#1a1a1a', padding: '20px', borderRadius: '12px', border: '1px solid #451a1a' }}>
-          <p>The marketplace is currently undergoing maintenance. Please try again later.</p>
-          {/* Diagnostic info remains hidden in source for dev use */}
-          {/* <pre style={{ display: 'none' }}>{String(err)}</pre> */}
-        </div>
+      <div style={{padding: "40px", textAlign: "center"}}>
+        Loading...
       </div>
     );
   }
+
+  return (
+    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+      <HomeContent projects={projects} />
+    </div>
+  );
 }

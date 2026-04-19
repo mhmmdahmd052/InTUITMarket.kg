@@ -12,7 +12,7 @@ export function cn(...inputs: ClassValue[]) {
  * Logic: if language exists -> return it; else if en exists -> return en; else -> return "N/A"
  */
 export const getLocalized = (obj: any, field: string, language: string) => {
-  if (!obj || !obj[field]) return "";
+  if (!obj || !obj[field]) return "N/A";
   
   const content = obj[field];
   
@@ -31,5 +31,5 @@ export const getLocalized = (obj: any, field: string, language: string) => {
     return content;
   }
 
-  return "";
+  return "N/A";
 };
