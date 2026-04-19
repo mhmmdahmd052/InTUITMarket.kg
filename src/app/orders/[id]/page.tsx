@@ -18,7 +18,7 @@ export default function OrderTrackingPage() {
   const orderId = params.id as string;
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
-  
+
   const order = (orders || []).find(o => o.id === orderId);
 
   useEffect(() => {
@@ -72,45 +72,43 @@ export default function OrderTrackingPage() {
                 {t("orders.logisticsTimeline")} {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             </div>
-            <Link 
-              href="/orders" 
+            <Link
+              href="/orders"
               className="group flex items-center gap-2 px-6 py-2.5 bg-surface-container-high rounded-xl text-sm font-bold text-on-surface-variant hover:bg-primary hover:text-on-primary transition-all shadow-sm"
             >
               <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">arrow_back</span>
-              {t("header.catalog")}
+              {t("header.orders")}
             </Link>
           </header>
 
           <div className="bg-surface-container-low border border-outline-variant/10 p-10 md:p-16 rounded-[40px] shadow-sm mb-16 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50"></div>
-            
+
             <div className="relative">
               <div className="absolute top-5 left-0 w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary transition-all duration-1000 ease-in-out shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]" 
+                <div
+                  className="h-full bg-primary transition-all duration-1000 ease-in-out shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)]"
                   style={{ width: `${(currentStageIndex / (STAGES.length - 1)) * 100}%` }}
                 ></div>
               </div>
-              
+
               <div className="relative flex justify-between">
                 {STAGES.map((stage, idx) => {
                   const isCompleted = idx <= currentStageIndex;
                   const isCurrent = idx === currentStageIndex;
                   const key = stageKeys[stage] || stage.toLowerCase();
-                  
+
                   return (
                     <div key={stage} className="flex flex-col items-center">
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-black relative z-10 transition-all duration-700 shadow-xl ${
-                        isCompleted ? 'bg-primary text-on-primary scale-110 shadow-primary/20' : 'bg-surface-container-highest text-on-surface-variant border-2 border-outline-variant/20'
-                      }`}>
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-black relative z-10 transition-all duration-700 shadow-xl ${isCompleted ? 'bg-primary text-on-primary scale-110 shadow-primary/20' : 'bg-surface-container-highest text-on-surface-variant border-2 border-outline-variant/20'
+                        }`}>
                         {isCompleted ? <span className="material-symbols-outlined text-xl">check</span> : (idx + 1)}
                         {isCurrent && (
                           <div className="absolute -inset-3 rounded-full border-2 border-primary/30 animate-ping"></div>
                         )}
                       </div>
-                      <span className={`mt-6 text-[10px] sm:text-xs font-black tracking-widest uppercase text-center max-w-[80px] sm:max-w-none transition-colors duration-500 ${
-                        isCompleted ? 'text-on-surface' : 'text-secondary/40'
-                      }`}>
+                      <span className={`mt-6 text-[10px] sm:text-xs font-black tracking-widest uppercase text-center max-w-[80px] sm:max-w-none transition-colors duration-500 ${isCompleted ? 'text-on-surface' : 'text-secondary/40'
+                        }`}>
                         {t(`orders.${key}`)}
                       </span>
                     </div>
@@ -128,17 +126,17 @@ export default function OrderTrackingPage() {
               </h3>
               <div className="grid gap-6">
                 {!(order?.items && order.items.length > 0) ? (
-                   <div className="py-12 text-center text-secondary font-bold border border-dashed border-outline-variant/20 rounded-3xl">
-                     {t("orders.noItemsFound")}
-                   </div>
+                  <div className="py-12 text-center text-secondary font-bold border border-dashed border-outline-variant/20 rounded-3xl">
+                    {t("orders.noItemsFound")}
+                  </div>
                 ) : (
                   order.items.map((item) => (
                     <div key={item?._id} className="flex items-center gap-6 p-4 bg-surface-container-high/50 rounded-2xl hover:bg-surface-container-high transition-colors group">
                       <div className="w-20 h-20 bg-white rounded-xl border border-outline-variant/10 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-transform">
-                        <img 
-                          alt={item?.name || 'Item'} 
-                          className="object-cover w-full h-full" 
-                          src={item?.imageUrl} 
+                        <img
+                          alt={item?.name || 'Item'}
+                          className="object-cover w-full h-full"
+                          src={item?.imageUrl}
                         />
                       </div>
                       <div className="flex-grow">
@@ -170,13 +168,13 @@ export default function OrderTrackingPage() {
                   {t("orders.financials")}
                 </h3>
                 <div className="space-y-4">
-                   <div className="flex justify-between items-center"><span className="text-secondary font-bold text-sm uppercase tracking-widest">{t("orders.subtotal")}</span><span className="font-black">{order.subtotal?.toLocaleString()} {t("cart.currency")}</span></div>
-                   <div className="flex justify-between items-center"><span className="text-secondary font-bold text-sm uppercase tracking-widest">{t("orders.tax")}</span><span className="font-black text-error">+{order.tax?.toLocaleString()} {t("cart.currency")}</span></div>
-                   <div className="flex justify-between items-center"><span className="text-secondary font-bold text-sm uppercase tracking-widest">{t("orders.logistics")}</span><span className="font-black text-primary">+{order.deliveryFee?.toLocaleString()} {t("cart.currency")}</span></div>
-                   <div className="pt-6 mt-6 border-t border-outline-variant/10 flex justify-between items-center">
-                     <span className="font-black uppercase tracking-widest text-primary text-sm">{t("orders.total")}</span>
-                     <span className="text-3xl font-black text-primary">{order.totalAmount?.toLocaleString()} <span className="text-sm">{t("cart.currency")}</span></span>
-                   </div>
+                  <div className="flex justify-between items-center"><span className="text-secondary font-bold text-sm uppercase tracking-widest">{t("orders.subtotal")}</span><span className="font-black">{order.subtotal?.toLocaleString()} {t("cart.currency")}</span></div>
+                  <div className="flex justify-between items-center"><span className="text-secondary font-bold text-sm uppercase tracking-widest">{t("orders.tax")}</span><span className="font-black text-error">+{order.tax?.toLocaleString()} {t("cart.currency")}</span></div>
+                  <div className="flex justify-between items-center"><span className="text-secondary font-bold text-sm uppercase tracking-widest">{t("orders.logistics")}</span><span className="font-black text-primary">+{order.deliveryFee?.toLocaleString()} {t("cart.currency")}</span></div>
+                  <div className="pt-6 mt-6 border-t border-outline-variant/10 flex justify-between items-center">
+                    <span className="font-black uppercase tracking-widest text-primary text-sm">{t("orders.total")}</span>
+                    <span className="text-3xl font-black text-primary">{order.totalAmount?.toLocaleString()} <span className="text-sm">{t("cart.currency")}</span></span>
+                  </div>
                 </div>
               </div>
 
@@ -191,13 +189,13 @@ export default function OrderTrackingPage() {
                   <p className="text-on-surface-variant font-bold">{order.shippingDetails?.city}</p>
                 </div>
                 <div className="mt-8 pt-6 border-t border-primary/10 flex items-center gap-3">
-                   <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-on-primary">
+                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-on-primary">
                     <span className="material-symbols-outlined">call</span>
-                   </div>
-                   <div>
-                     <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-1">Contact Receiver</p>
-                     <p className="font-black text-on-surface">{order.shippingDetails?.phone}</p>
-                   </div>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest leading-none mb-1">Contact Receiver</p>
+                    <p className="font-black text-on-surface">{order.shippingDetails?.phone}</p>
+                  </div>
                 </div>
               </div>
             </div>
