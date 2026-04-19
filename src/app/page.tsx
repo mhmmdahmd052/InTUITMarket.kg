@@ -3,9 +3,13 @@ import HomeContent from "@/components/home/HomeContent";
 
 async function getHomePageData() {
   try {
-    const query = `*[_type == "project"]{
+    const query = `*[_type == "project"] | order(_createdAt desc) {
       _id,
       name,
+      description,
+      status,
+      price,
+      category,
       slug,
       "imageUrl": image.asset->url
     }`;
