@@ -21,10 +21,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     setMounted(true);
-    if (mounted && !isAuthenticated) {
-      router.replace(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-    }
-  }, [isAuthenticated, router, mounted]);
+  }, []);
 
   useEffect(() => {
     async function syncOrders() {
@@ -76,7 +73,7 @@ export default function OrdersPage() {
     }
   }, [mounted, user?.id]);
 
-  if (!mounted || !user) {
+  if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">

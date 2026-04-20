@@ -44,11 +44,6 @@ export default function SettingsPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      router.replace(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-    }
-  }, [isAuthenticated, router, mounted]);
 
   useEffect(() => {
     if (user) {
@@ -66,7 +61,7 @@ export default function SettingsPage() {
     }
   }, [theme, mounted]);
 
-  if (!mounted || !user) {
+  if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">

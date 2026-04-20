@@ -16,12 +16,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setMounted(true);
-    if (mounted && !isAuthenticated) {
-      router.replace(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-    }
-  }, [isAuthenticated, router, mounted]);
+  }, []);
 
-  if (!mounted || !user) {
+  if (!mounted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-6">
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
