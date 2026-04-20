@@ -61,15 +61,27 @@ export async function sendOrderEmail(order: any, type: string) {
         </div>
       `;
 
+  console.log("[EMAIL PAYLOAD]", {
+    to: order.email,
+    subject: subjectMap[type]
+  });
+
   try {
-    await resend.emails.send({
-      from: 'InTUIT Market <orders@intuitmarket.store>',
+    const response = await resend.emails.send({
+      from: 'orders@intuitmarket.store',
       to: order.email,
       subject: subjectMap[type],
       html: htmlContent
     });
-    console.log(`[EMAIL] ${type} email sent successfully`);
-  } catch (err) {
-    console.error(`[EMAIL] Failed to send ${type} email:`, err);
+
+    console.log("[EMAIL RESPONSE]", response);
+
+    if (!response || response.error) {
+      console.error("[EMAIL FAILED]", response?.error);
+      throw new Error("Email failed");
+    }
+  } catch (err: any) {
+    console.error("[EMAIL EXCEPTION]", err.message);
+    throw err;
   }
 }
