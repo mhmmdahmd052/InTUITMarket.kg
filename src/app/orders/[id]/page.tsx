@@ -26,51 +26,46 @@ export default function OrderTrackingPage() {
     setMounted(true);
   }, []);
 
+  // ROBUST POLLER: Synchronizes status based on server-side time logic
   useEffect(() => {
-    // 1. Initial checks - Return if delivered, not mounted, or already in-flight
-    if (!mounted || !order || order.status === 'Delivered' || isUpdating.current) return;
+    if (!mounted || !order || order.status === 'Delivered') return;
 
-    const currentStageIndex = STAGES.indexOf(order.status);
-    
-    // 2. Only proceed if there is a valid next stage to move into
-    if (currentStageIndex >= 0 && currentStageIndex < STAGES.length - 1) {
-      const nextStatus = STAGES[currentStageIndex + 1];
-      
-      const timer = setTimeout(async () => {
-        if (isUpdating.current) return; // double check lock
-        isUpdating.current = true;
+    const syncStatus = async () => {
+      if (isUpdating.current) return;
+      isUpdating.current = true;
 
-        console.log(`[STABILIZER] Transitioning: ${order.status} -> ${nextStatus}`);
+      try {
+        const response = await fetch('/api/sync-order-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: order.id,
+            email: order.shippingDetails?.email || user?.email
+          })
+        });
 
-        try {
-          // A. Notify Backend (Email Dispatch)
-          const response = await fetch('/api/update-order-status', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              orderId: order.id,
-              status: nextStatus,
-              email: order.shippingDetails?.email || user?.email
-            })
-          });
-
-          if (!response.ok) throw new Error(`API error: ${response.status}`);
-
-          console.log(`[STABILIZER] Notification successful for ${nextStatus}`);
-
-          // B. Update Local UI (This will trigger the next effect run after 5s)
-          updateOrderStatus(order.id, nextStatus);
-          
-        } catch (err) {
-          console.error("[STABILIZER] Step failure:", err);
-        } finally {
-          isUpdating.current = false;
+        if (response.ok) {
+          const data = await response.json();
+          // If the server advanced the status, update our local UI store
+          if (data.status && data.status !== order.status) {
+            console.log(`[TRACKER] Sync: ${order.status} -> ${data.status}`);
+            updateOrderStatus(order.id, data.status);
+          }
         }
-      }, 5000);
+      } catch (err) {
+        console.error("[TRACKER] Sync Error:", err);
+      } finally {
+        isUpdating.current = false;
+      }
+    };
 
-      return () => clearTimeout(timer);
-    }
-  }, [mounted, order?.status, updateOrderStatus, user?.email, orderId]);
+    // Run immediately on change/mount
+    syncStatus();
+
+    // Then poll every 3 seconds
+    const interval = setInterval(syncStatus, 3000);
+    return () => clearInterval(interval);
+  }, [mounted, order?.status, order?.id, updateOrderStatus, user?.email]);
 
   if (!mounted || !order) {
     return (
