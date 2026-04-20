@@ -84,10 +84,21 @@ export async function sendOrderEmail(order: any, type: string) {
               </tbody>
             </table>
 
-            <div style="margin-top: 25px; text-align: right; border-top: 2px solid #000; padding-top: 15px;">
+            <div style="margin-top: 25px; text-align: right; border-top: 2px solid #000; padding-top: 15px; margin-bottom: 30px;">
               <p style="font-size: 1.25rem; font-weight: bold; margin: 0;">
                 Total: ${Number(order.total_amount || order.totalAmount || 0).toLocaleString()} KGS
               </p>
+            </div>
+
+            <!-- Customer & Delivery Information Block -->
+            <div style="margin-top: 24px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff;">
+              <h3 style="font-size: 18px; margin-bottom: 12px; font-weight: 600; margin-top: 0;">Customer & Delivery Information</h3>
+              <p style="margin: 4px 0; font-size: 0.95rem;"><strong>Name:</strong> ${order.shipping_details?.fullName || ""}</p>
+              <p style="margin: 4px 0; font-size: 0.95rem;"><strong>Email:</strong> ${order.email || ""}</p>
+              <p style="margin: 4px 0; font-size: 0.95rem;"><strong>Phone:</strong> ${order.shipping_details?.phone || ""}</p>
+              <p style="margin: 4px 0; font-size: 0.95rem;"><strong>Address:</strong> ${order.shipping_details?.address || ""}</p>
+              <p style="margin: 4px 0; font-size: 0.95rem;"><strong>City:</strong> ${order.shipping_details?.city || ""}</p>
+              ${order.shipping_details?.notes ? `<p style="margin-top: 8px; font-size: 0.95rem; background: #f9fafb; padding: 10px; border-radius: 6px;"><strong>Notes:</strong> ${order.shipping_details.notes}</p>` : ""}
             </div>
           </div>
           `
