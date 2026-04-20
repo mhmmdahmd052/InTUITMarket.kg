@@ -17,16 +17,16 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    
+
     // 1. Identify User (ENFORCE AUTH)
     console.log('[API] Attempting to identify user...');
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
       console.error('[API] user_id identification failed - Unauthenticated');
       throw new Error('Authentication required: You must be logged in to place an order.');
     }
-    
+
     userId = user.id;
     console.log(`[API] user_id: ${userId}`);
 
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       createdAt: body.createdAt || new Date().toISOString(),
       shippingDetails: body.shippingDetails
     };
-    
+
     await createRelationalOrder(orderData, userId);
     console.log('[DB] success: Relational insert completed');
     orderSaved = 'YES';
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     // 4. Generate Invoice & Send Email (AFTER DB SUCCESS)
     const invoice = generateInvoice(orderData);
     console.log('[EMAIL] preparing send...');
-    
+
     const itemsHtml = orderData.items.map((item: any) => `
       <tr>
         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name}</td>
@@ -104,15 +104,15 @@ export async function POST(req: Request) {
     console.log('[EMAIL] sent: SUCCESS');
     emailSent = 'YES';
 
-    return NextResponse.json({ 
-      success: true, 
-      debug: { userId, orderSaved, dbCheck, emailSent } 
+    return NextResponse.json({
+      success: true,
+      debug: { userId, orderSaved, dbCheck, emailSent }
     });
 
   } catch (err: any) {
     const errorMsg = err.message || JSON.stringify(err);
     console.error(`[FAIL] ${errorMsg}`);
-    
+
     // Final Log Output for Debugging
     console.log(`
 [DEBUG RESULT]
@@ -123,9 +123,9 @@ email_sent: ${emailSent}
 error: ${errorMsg}
     `);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: errorMsg,
-      debug: { userId, orderSaved, dbCheck, emailSent } 
+      debug: { userId, orderSaved, dbCheck, emailSent }
     }, { status: 500 });
   }
 }
