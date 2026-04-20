@@ -9,7 +9,10 @@ export const dynamic = 'force-dynamic';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
-  let userId = 'unknown';
+  console.log("🔥 API HIT: send-order");
+  return Response.json({
+    debug: "API WORKING"
+  });
   let orderSaved = 'NO';
   let dbCheck = 'FAILED';
   let emailSent = 'NO';
