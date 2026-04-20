@@ -17,24 +17,25 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://intuitmarket.kg'),
-  title: "InTUITMarket - Architecture Meets Supply",
-  description: "High-end construction site supplies and engineering materials.",
+  metadataBase: new URL('https://intuitmarket.store'),
+  title: "InTUITMarket - Premium Digital Marketplace",
+  description: "Experience excellence with InTUITMarket. Premium high-end architectural and engineering supplies.",
   icons: {
-    icon: [
-      { url: '/logo.png' },
-      { url: '/logo.png', sizes: '192x192', type: 'image/png' },
-      { url: '/logo.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/logo.png', sizes: '180x180', type: 'image/png' },
-    ],
+    icon: '/logo.png',
   },
   openGraph: {
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    title: "InTUITMarket",
+    description: "Premium digital marketplace for high-end supplies.",
+    url: "https://intuitmarket.store",
+    siteName: "InTUITMarket",
+    images: [{ url: 'https://intuitmarket.store/logo.png', width: 600, height: 600 }],
+    type: "website",
   },
   twitter: {
-    images: ['/og-image.png'],
+    card: "summary_large_image",
+    title: "InTUITMarket",
+    description: "Premium digital marketplace",
+    images: ['https://intuitmarket.store/logo.png'],
   },
   manifest: '/site.webmanifest',
 };
