@@ -7,7 +7,8 @@
     "logout": "Logout",
     "login": "Login",
     "account": "Account",
-    "settings": "Settings"
+    "settings": "Settings",
+    "orders": "Order History"
   },
   "auth": {
     "welcomeBack": "Welcome Back",

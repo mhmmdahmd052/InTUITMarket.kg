@@ -7,7 +7,8 @@
     "logout": "Выйти",
     "login": "Войти",
     "account": "Аккаунт",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "orders": "История заказов"
   },
   "auth": {
     "welcomeBack": "С возвращением",

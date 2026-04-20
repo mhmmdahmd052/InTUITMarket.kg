@@ -10,6 +10,7 @@ export interface User {
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   initialize: () => Promise<void>;
   login: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   register: (data: { name: string; email: string; password?: string }) => Promise<{ success: boolean; error?: string }>;
@@ -20,6 +21,7 @@ interface AuthStore {
 export const useAuthStore = create<AuthStore>()((set) => ({
   user: null,
   isAuthenticated: false,
+  isInitialized: false,
   
   initialize: async () => {
     // 1. Get initial session
@@ -35,6 +37,9 @@ export const useAuthStore = create<AuthStore>()((set) => ({
         }
       });
     }
+    
+    // Set initialized to true after initial session check
+    set({ isInitialized: true });
 
     // 2. Listen for auth changes
     supabase.auth.onAuthStateChange((_event, session) => {
