@@ -87,7 +87,7 @@
     "grandTotal": "Итого к оплате",
     "proceedToCheckout": "Перейти к оформлению",
     "securePayment": "Безопасная оплата от InTUIT Pay",
-    "currency": "сом"
+    "currency": "KGS"
   },
   "checkout": {
     "shipping": "Доставка",
@@ -285,7 +285,7 @@
     "featuredSubtitle": "Поставки профессионального уровня для промышленных и жилых объектов.",
     "viewAll": "Весь каталог →",
     "inStock": "В наличии",
-    "kgs": "сом",
+    "kgs": "KGS",
     "poa": "Цена по запросу",
     "showProduct": "Смотреть"
   },

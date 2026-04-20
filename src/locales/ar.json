@@ -87,7 +87,7 @@
     "grandTotal": "المجموع الإجمالي",
     "proceedToCheckout": "متابعة الدفع",
     "securePayment": "دفع آمن مدعوم من InTUIT Pay",
-    "currency": "سوم"
+    "currency": "KGS"
   },
   "checkout": {
     "shipping": "الشحن",
@@ -285,7 +285,7 @@
     "featuredSubtitle": "لوازم احترافية للمباني الصناعية والسكنية.",
     "viewAll": "تصفح كل المخزون ←",
     "inStock": "متوفر",
-    "kgs": "سوم",
+    "kgs": "KGS",
     "poa": "السعر عند الطلب",
     "showProduct": "عرض المنتج"
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useOrderStore, OrderStatus } from "@/lib/orderStore";
@@ -18,6 +18,7 @@ export default function OrderTrackingPage() {
   const orderId = params.id as string;
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  const isUpdating = useRef(false);
 
   const order = (orders || []).find(o => o.id === orderId);
 
@@ -26,18 +27,24 @@ export default function OrderTrackingPage() {
   }, []);
 
   useEffect(() => {
-    if (!mounted || !order || order.status === 'Delivered') return;
+    // 1. Initial checks - Return if delivered, not mounted, or already in-flight
+    if (!mounted || !order || order.status === 'Delivered' || isUpdating.current) return;
 
     const currentStageIndex = STAGES.indexOf(order.status);
+    
+    // 2. Only proceed if there is a valid next stage to move into
     if (currentStageIndex >= 0 && currentStageIndex < STAGES.length - 1) {
       const nextStatus = STAGES[currentStageIndex + 1];
+      
       const timer = setTimeout(async () => {
-        // 1. Update local store
-        updateOrderStatus(order.id, nextStatus);
-        
-        // 2. Trigger email notification via API
+        if (isUpdating.current) return; // double check lock
+        isUpdating.current = true;
+
+        console.log(`[STABILIZER] Transitioning: ${order.status} -> ${nextStatus}`);
+
         try {
-          await fetch('/api/update-order-status', {
+          // A. Notify Backend (Email Dispatch)
+          const response = await fetch('/api/update-order-status', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -46,14 +53,24 @@ export default function OrderTrackingPage() {
               email: order.shippingDetails?.email || user?.email
             })
           });
-          console.log(`[STATUS] Updated to ${nextStatus} and email sent.`);
+
+          if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+          console.log(`[STABILIZER] Notification successful for ${nextStatus}`);
+
+          // B. Update Local UI (This will trigger the next effect run after 5s)
+          updateOrderStatus(order.id, nextStatus);
+          
         } catch (err) {
-          console.error("[STATUS] Failed to trigger update email:", err);
+          console.error("[STABILIZER] Step failure:", err);
+        } finally {
+          isUpdating.current = false;
         }
       }, 5000);
+
       return () => clearTimeout(timer);
     }
-  }, [mounted, order, updateOrderStatus, user?.email]);
+  }, [mounted, order?.status, updateOrderStatus, user?.email, orderId]);
 
   if (!mounted || !order) {
     return (
