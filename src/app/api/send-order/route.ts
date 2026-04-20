@@ -117,10 +117,10 @@ export async function POST(req: Request) {
         const resendResponse = await resend.emails.send({
           from: 'InTUIT Market <orders@intuitmarket.store>',
           to: targetEmail,
-          subject: 'Order Confirmation – InTUITMarket',
+          subject: 'Order Successfully Placed – InTUITMarket',
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-              <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Order Confirmed</h1>
+              <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Order Successfully Placed</h1>
               <p>Thank you for your order, <strong>${shippingDetails?.fullName || 'Customer'}</strong>.</p>
               <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
                  <p><strong>Invoice ID:</strong> ${invoice.invoiceId}</p>
