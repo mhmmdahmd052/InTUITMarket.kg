@@ -111,23 +111,29 @@ export async function POST(req: Request) {
           to: targetEmail,
           subject: 'Order Confirmation – InTUITMarket',
           html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
-              <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Order Confirmed</h1>
+            <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
+              <p style="font-size: 1.5rem; font-weight: bold; margin-bottom: 20px;">Order Confirmed</p>
               
               <p>Thank you for your order, <strong>${shippingDetails?.fullName || 'Customer'}</strong>.</p>
               
-              <p><strong>Invoice ID:</strong> ${invoice.invoiceId}</p>
-              <p><strong>Order ID:</strong> ${orderData.id}</p>
+              <p>Invoice ID: ${invoice.invoiceId}</p>
+              <p>Order ID: ${orderData.id}</p>
               
-              <div style="margin: 25px 0; border-top: 1px solid #eee; padding-top: 20px;">
+              <div style="margin: 20px 0; border-top: 1px solid #ddd; padding-top: 20px;">
                 ${(orderData.items || []).map((item: any) => `
-                  <p style="margin: 5px 0; font-weight: 500;">
+                  <p style="margin: 5px 0;">
                     ${item.name || 'Product'} ${item.quantity || 1} ${Number(item.price || 0).toLocaleString()} KGS
                   </p>
                 `).join('')}
               </div>
               
-              <p style="font-size: 1.25rem; font-weight: bold; border-top: 2px solid #eee; pt-4 mt-4;">
+              <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; font-size: 0.9rem; color: #666;">
+                <p style="margin: 2px 0;">Subtotal: ${Number(orderData.subtotal || 0).toLocaleString()} KGS</p>
+                <p style="margin: 2px 0;">Tax: ${Number(orderData.tax || 0).toLocaleString()} KGS</p>
+                <p style="margin: 2px 0;">Delivery: ${Number(orderData.deliveryFee || 0).toLocaleString()} KGS</p>
+              </div>
+
+              <p style="font-size: 1.2rem; font-weight: bold; border-top: 2px solid #333; margin-top: 15px; padding-top: 10px;">
                 Total: ${Number(orderData.totalAmount || 0).toLocaleString()} KGS
               </p>
             </div>
@@ -148,17 +154,17 @@ export async function POST(req: Request) {
               to: targetEmail,
               subject: "Order Received – InTUITMarket",
               html: `
-                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
-                  <h1 style="color: #2563eb;">Order Status Update</h1>
+                <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
+                  <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">Order Status Update</p>
                   <p>Hello,</p>
                   <p>The status of your order <strong>#${orderData.id}</strong> has changed.</p>
-                  <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
-                    <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin-bottom: 10px;">New Status</p>
-                    <p style="font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0;">Processing</p>
+                  <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0; text-align: center;">
+                    <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin: 0 0 5px 0; font-size: 0.8rem;">Current Status</p>
+                    <p style="font-size: 1.5rem; font-weight: bold; color: #0f172a; margin: 0;">Processing</p>
                   </div>
-                  <p style="font-size: 1.1rem;">Your order is being processed by our warehouse ensemble.</p>
-                  <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #666; text-align: center;">
-                    <p>&copy; ${new Date().getFullYear()} InTUIT Market. Real-time Status System.</p>
+                  <p>Your order is now being processed and prepared for shipment.</p>
+                  <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #999;">
+                    <p>&copy; ${new Date().getFullYear()} InTUIT Market. Real-time Logistics Tracking.</p>
                   </footer>
                 </div>
               `
