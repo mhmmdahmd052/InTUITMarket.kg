@@ -8,6 +8,7 @@ import { useCartStore } from '@/lib/store';
 import { useAuthStore } from '@/lib/authStore';
 import { useOrderStore, Order } from '@/lib/orderStore';
 import { useTranslation } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
 
 export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
@@ -78,16 +79,20 @@ export default function CheckoutPage() {
       createOrder(newOrder);
       
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
         await fetch('/api/send-order', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    ...newOrder,
-    name: newOrder.shippingDetails.fullName
-  })
-});
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            ...newOrder,
+            name: newOrder.shippingDetails.fullName
+          })
+        });
       } catch (err) {
         console.error("Failed to send order email:", err);
       }
