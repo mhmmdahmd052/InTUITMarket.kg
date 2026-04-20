@@ -30,7 +30,7 @@ export default function Header() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm border-b border-surface-container-high transition-colors duration-300">
+    <nav className="fixed top-0 w-full z-50 bg-black shadow-sm border-b border-outline-variant/10 transition-colors duration-300">
       <div className="relative flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
         <div className="flex items-center gap-8">
           <Link href="/" onClick={closeMenu} className="hover:opacity-80 transition-opacity">

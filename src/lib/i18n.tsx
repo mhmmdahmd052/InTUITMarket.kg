@@ -86,7 +86,7 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // 3. Ultimate Fallback
-    return "N/A";
+    return "الرجوع إلى Order History";
   };
 
   if (!mounted) {
