@@ -17,7 +17,11 @@ export default function NewPasswordPage() {
 
   useEffect(() => {
     setMounted(true);
+    
     const checkSession = async () => {
+      // Small delay to allow session to be recovered from storage
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error(t("auth.invalidResetSession"));

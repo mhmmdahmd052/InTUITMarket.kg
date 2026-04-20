@@ -23,10 +23,7 @@ export default function OrderTrackingPage() {
 
   useEffect(() => {
     setMounted(true);
-    if (mounted && !isAuthenticated) {
-      router.push(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
-    }
-  }, [isAuthenticated, router, mounted]);
+  }, []);
 
   useEffect(() => {
     if (!mounted || !order || order.status === 'Delivered') return;
