@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { createClient } from "@supabase/supabase-js";
 import { createRelationalOrder, getOrder } from '@/lib/serverOrderStore';
 import { generateInvoice } from '@/lib/invoice';
+import { sendOrderEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,85 +97,27 @@ export async function POST(req: Request) {
     console.log('[DB] fetched order: VERIFIED');
     dbCheck = 'SUCCESS';
 
-    // 4. Generate Invoice & Send Email
-    const invoice = generateInvoice(orderData);
+    // 4. Send Email using centralized system (Confirmed + Invoice)
     const targetEmail = orderData.email || email || user.email;
 
-    if (!targetEmail) {
-      console.warn('[EMAIL] No target email found for order confirmation');
-    } else {
-      console.log(`[EMAIL] sending confirmation to ${targetEmail}...`);
-      
+    if (targetEmail) {
+      console.log(`[EMAIL] triggering centralized "confirmed" notification for ${targetEmail}...`);
       try {
-        const resendResponse = await resend.emails.send({
-          from: 'InTUIT Market <orders@intuitmarket.store>',
-          to: targetEmail,
-          subject: 'Order Confirmation – InTUITMarket',
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
-              <p style="font-size: 1.5rem; font-weight: bold; margin-bottom: 20px;">Order Confirmed</p>
-              
-              <p>Thank you for your order, <strong>${shippingDetails?.fullName || 'Customer'}</strong>.</p>
-              
-              <p>Invoice ID: ${invoice.invoiceId}</p>
-              <p>Order ID: ${orderData.id}</p>
-              
-              <div style="margin: 20px 0; border-top: 1px solid #ddd; padding-top: 20px;">
-                ${(orderData.items || []).map((item: any) => `
-                  <p style="margin: 5px 0;">
-                    ${item.name || 'Product'} ${item.quantity || 1} ${Number(item.price || 0).toLocaleString()} KGS
-                  </p>
-                `).join('')}
-              </div>
-              
-              <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; font-size: 0.9rem; color: #666;">
-                <p style="margin: 2px 0;">Subtotal: ${Number(orderData.subtotal || 0).toLocaleString()} KGS</p>
-                <p style="margin: 2px 0;">Tax: ${Number(orderData.tax || 0).toLocaleString()} KGS</p>
-                <p style="margin: 2px 0;">Delivery: ${Number(orderData.deliveryFee || 0).toLocaleString()} KGS</p>
-              </div>
+        // Fetch full order with items as per SPEC
+        const { data: fullOrder, error: fetchError } = await supabaseAdmin
+          .from("orders")
+          .select("*, order_items(*)")
+          .eq("id", orderData.id)
+          .single();
 
-              <p style="font-size: 1.2rem; font-weight: bold; border-top: 2px solid #333; margin-top: 15px; padding-top: 10px;">
-                Total: ${Number(orderData.totalAmount || 0).toLocaleString()} KGS
-              </p>
-            </div>
-          `
-        });
-
-        if (resendResponse.error) {
-          console.error('[EMAIL] Resend returned error:', resendResponse.error);
-        } else {
-          console.log('[EMAIL] sent: SUCCESS');
+        if (!fetchError && fullOrder) {
+          await sendOrderEmail(fullOrder, "confirmed");
           emailSent = 'YES';
-
-          // NEW: Also trigger the "Processing" stage email immediately so it's not skipped
-          console.log('[EMAIL] triggering initial "Processing" status update...');
-          try {
-            await resend.emails.send({
-              from: 'InTUIT Market <orders@intuitmarket.store>',
-              to: targetEmail,
-              subject: "Order Received – InTUITMarket",
-              html: `
-                <div style="font-family: sans-serif; max-width: 600px; color: #333; line-height: 1.6;">
-                  <p style="font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">Order Status Update</p>
-                  <p>Hello,</p>
-                  <p>The status of your order <strong>#${orderData.id}</strong> has changed.</p>
-                  <div style="background: #f8fafc; padding: 25px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0; text-align: center;">
-                    <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin: 0 0 5px 0; font-size: 0.8rem;">Current Status</p>
-                    <p style="font-size: 1.5rem; font-weight: bold; color: #0f172a; margin: 0;">Processing</p>
-                  </div>
-                  <p>Your order is now being processed and prepared for shipment.</p>
-                  <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #999;">
-                    <p>&copy; ${new Date().getFullYear()} InTUIT Market. Real-time Logistics Tracking.</p>
-                  </footer>
-                </div>
-              `
-            });
-          } catch (procErr) {
-            console.error('[EMAIL] Failed to send initial Processing notification:', procErr);
-          }
+        } else {
+          console.error('[EMAIL] Failed to fetch full order for notification:', fetchError);
         }
       } catch (emailErr) {
-        console.error('[EMAIL] Exception occurred during sending:', emailErr);
+        console.error('[EMAIL] Exception occurred during centralized sending:', emailErr);
       }
     }
 

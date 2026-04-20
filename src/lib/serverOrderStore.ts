@@ -1,4 +1,5 @@
 import { getSupabaseAdmin } from './supabaseAdmin';
+import { sendOrderEmail } from "./email";
 
 export type OrderStatus = 'Processing' | 'Shipped' | 'Out for Delivery' | 'Delivered';
 
@@ -132,12 +133,45 @@ export async function getOrdersByUser(userId: string): Promise<Order[]> {
 /**
  * Updates status using Service Role client.
  */
-export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
+export async function updateOrderStatus(orderId: string, status: string): Promise<any> {
   const admin = getSupabaseAdmin();
+
+  const statusMap: any = {
+    processing: "Processing",
+    shipped: "Shipped",
+    out_for_delivery: "Out for Delivery",
+    delivered: "Delivered"
+  };
+
+  const normalized = statusMap[status.toLowerCase()] || status;
+
+  // 1. UPDATE DB
   const { error } = await admin
     .from('orders')
-    .update({ status })
+    .update({ status: normalized })
     .eq('id', orderId);
 
   if (error) throw error;
+
+  // 2. FETCH FULL ORDER WITH ITEMS
+  const { data: orderData, error: fetchError } = await admin
+    .from('orders')
+    .select('*, order_items(*)')
+    .eq('id', orderId)
+    .single();
+
+  if (fetchError || !orderData) throw fetchError || new Error("Order not found after update");
+
+  // 3. SEND EMAIL (MANDATORY)
+  // Map internal keys for the email utility
+  const typeMap: any = {
+    "Processing": "processing",
+    "Shipped": "shipped",
+    "Out for Delivery": "out_for_delivery",
+    "Delivered": "delivered"
+  };
+  
+  await sendOrderEmail(orderData, typeMap[normalized] || "processing");
+
+  return orderData;
 }
