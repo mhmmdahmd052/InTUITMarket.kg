@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { createClient } from "@supabase/supabase-js";
-import { createRelationalOrder, getOrder } from '@/lib/serverOrderStore';
+import { createRelationalOrder, getOrder, updateOrderStatus } from '@/lib/serverOrderStore';
 import { generateInvoice } from '@/lib/invoice';
 import { sendOrderEmail } from '@/lib/email';
 
@@ -97,29 +97,32 @@ export async function POST(req: Request) {
     console.log('[DB] fetched order: VERIFIED');
     dbCheck = 'SUCCESS';
 
-    // 4. Send Email using centralized system (Confirmed + Invoice)
-    const targetEmail = orderData.email || email || user.email;
+    // 4. [FINAL FORCE] Fetch full order with items
+    console.log("[EMAIL] Fetching full order for verification...");
+    const { data: fullOrder, error: fetchError } = await supabaseAdmin
+      .from("orders")
+      .select("*, order_items(*)")
+      .eq("id", orderData.id)
+      .single();
 
-    if (targetEmail) {
-      console.log(`[EMAIL] triggering centralized "confirmed" notification for ${targetEmail}...`);
-      try {
-        // Fetch full order with items as per SPEC
-        const { data: fullOrder, error: fetchError } = await supabaseAdmin
-          .from("orders")
-          .select("*, order_items(*)")
-          .eq("id", orderData.id)
-          .single();
-
-        if (!fetchError && fullOrder) {
-          await sendOrderEmail(fullOrder, "confirmed");
-          emailSent = 'YES';
-        } else {
-          console.error('[EMAIL] Failed to fetch full order for notification:', fetchError);
-        }
-      } catch (emailErr) {
-        console.error('[EMAIL] Exception occurred during centralized sending:', emailErr);
-      }
+    if (fetchError || !fullOrder) {
+      console.error("[DB FETCH ERROR]", fetchError);
+      throw fetchError || new Error("Order data retrieval failed");
     }
+
+    // 5. [FINAL FORCE] Send "Order Confirmed" + Invoice
+    // This WILL throw if Resend fails, failing the entire API (NO SILENT ERRORS)
+    console.log("[EMAIL] Sending confirmed...");
+    await sendOrderEmail(fullOrder, "confirmed");
+    console.log("[EMAIL] Confirmed sent");
+
+    // 6. [FINAL FORCE] Move status to "Processing"
+    // This will trigger the "Processing" email automatically in the store function
+    console.log("[STATUS] Moving to processing...");
+    await updateOrderStatus(orderData.id, "processing");
+    console.log("[STATUS] Moved to processing");
+
+    emailSent = 'YES';
 
     return NextResponse.json({ 
       success: true, 
