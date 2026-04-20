@@ -1,21 +1,23 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { getOrder, updateOrderStatus } from '@/lib/serverOrderStore';
+import { getOrder, updateOrderStatus, OrderStatus } from '@/lib/serverOrderStore';
+
+export const dynamic = 'force-dynamic';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const SUBJECT_MAP: Record<string, string> = {
-  processing: "Order Received – InTUITMarket",
-  shipped: "Your Order Has Shipped – InTUITMarket",
-  out_for_delivery: "Out for Delivery – InTUITMarket",
-  delivered: "Order Delivered – InTUITMarket"
+  Processing: "Order Received – InTUITMarket",
+  Shipped: "Your Order Has Shipped – InTUITMarket",
+  "Out for Delivery": "Out for Delivery – InTUITMarket",
+  Delivered: "Order Delivered – InTUITMarket"
 };
 
 const MESSAGE_MAP: Record<string, string> = {
-  processing: "Your order is being processed by our warehouse ensemble.",
-  shipped: "Your order has been dispatched and is on its way to you.",
-  out_for_delivery: "Your order is with the courier and will arrive shortly.",
-  delivered: "Your order has been successfully delivered. Thank you for choosing InTUIT Market."
+  Processing: "Your order is being processed by our warehouse ensemble.",
+  Shipped: "Your order has been dispatched and is on its way to you.",
+  "Out for Delivery": "Your order is with the courier and will arrive shortly.",
+  Delivered: "Your order has been successfully delivered. Thank you for choosing InTUIT Market."
 };
 
 export async function POST(req: Request) {
@@ -26,8 +28,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Update status in Supabase
-    await updateOrderStatus(orderId, status);
+    // 1. Update status in Supabase (Service Role)
+    await updateOrderStatus(orderId, status as OrderStatus);
 
     // 2. Fetch updated order from DB
     const order = await getOrder(orderId);
@@ -37,8 +39,8 @@ export async function POST(req: Request) {
     }
 
     // 3. Send Status Update Email
-    const subject = SUBJECT_MAP[status] || 'Order Update – InTUITMarket';
-    const message = MESSAGE_MAP[status] || 'Your order status has been updated.';
+    const subject = SUBJECT_MAP[status as OrderStatus] || 'Order Update – InTUITMarket';
+    const message = MESSAGE_MAP[status as OrderStatus] || 'Your order status has been updated.';
 
     await resend.emails.send({
       from: 'InTUIT Market <orders@intuitmarket.store>',
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
           
           <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
             <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin-bottom: 10px;">New Status</p>
-            <p style="font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0;">${status.replace(/_/g, ' ')}</p>
+            <p style="font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0;">${status}</p>
           </div>
 
           <p style="font-size: 1.1rem;">${message}</p>

@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabaseAdmin } from './supabaseAdmin';
 
 export type OrderStatus = 'Processing' | 'Shipped' | 'Out for Delivery' | 'Delivered';
 
@@ -17,102 +17,127 @@ export type Order = {
 };
 
 /**
- * Creates a new order in Supabase linked to a authenticated user ID.
+ * Creates a normalized order in Supabase (Relational: Orders + OrderItems).
+ * Uses Service Role client to ensure success on restricted tables.
  */
-export async function createOrder(order: Order, userId: string): Promise<void> {
-  const { error } = await supabase
+export async function createRelationalOrder(order: Order, userId: string): Promise<void> {
+  const admin = getSupabaseAdmin();
+
+  // 1. Insert into 'orders'
+  const { error: orderError } = await admin
     .from('orders')
     .insert([{
       id: order.id,
       user_id: userId,
       email: order.email,
-      items: order.items,
+      status: order.status,
       subtotal: order.subtotal,
       tax: order.tax,
       delivery_fee: order.deliveryFee,
-      total: order.totalAmount,
-      status: order.status,
-      created_at: order.createdAt,
-      shipping_details: order.shippingDetails
+      total_amount: order.totalAmount,
+      shipping_details: order.shippingDetails,
+      created_at: order.createdAt
     }]);
 
-  if (error) {
-    console.error('Supabase createOrder error:', error);
-    throw error;
+  if (orderError) {
+    console.error('[DB ERROR] orders insert failed:', orderError);
+    throw orderError;
+  }
+
+  // 2. Insert into 'order_items'
+  const itemsToInsert = order.items.map(item => ({
+    order_id: order.id,
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity,
+    image_url: item.imageUrl
+  }));
+
+  const { error: itemsError } = await admin
+    .from('order_items')
+    .insert(itemsToInsert);
+
+  if (itemsError) {
+    console.error('[DB ERROR] order_items insert failed:', itemsError);
+    throw itemsError;
   }
 }
 
 /**
- * Fetches a single order by ID from Supabase.
+ * Fetches an order from Supabase reconstructed from normalized tables.
  */
 export async function getOrder(orderId: string): Promise<Order | undefined> {
-  const { data, error } = await supabase
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from('orders')
-    .select('*')
+    .select('*, order_items(*)')
     .eq('id', orderId)
     .single();
 
-  if (error || !data) {
-    if (error) console.error('Supabase getOrder error:', error);
-    return undefined;
-  }
+  if (error || !data) return undefined;
 
   return {
     id: data.id,
     userId: data.user_id,
     email: data.email,
-    items: data.items,
-    subtotal: data.subtotal || 0,
-    tax: data.tax || 0,
-    deliveryFee: data.delivery_fee || 0,
-    totalAmount: data.total,
+    subtotal: data.subtotal,
+    tax: data.tax,
+    deliveryFee: data.delivery_fee,
+    totalAmount: data.total_amount,
     status: data.status,
     createdAt: data.created_at,
-    shippingDetails: data.shipping_details
+    shippingDetails: data.shipping_details,
+    items: (data.order_items || []).map((item: any) => ({
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      imageUrl: item.image_url
+    }))
   };
 }
 
 /**
- * Fetches all orders for a specific user ID from Supabase.
+ * Fetches all user orders with their items joined.
  */
 export async function getOrdersByUser(userId: string): Promise<Order[]> {
-  const { data, error } = await supabase
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin
     .from('orders')
-    .select('*')
+    .select('*, order_items(*)')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Supabase getOrdersByUser error:', error);
-    return [];
-  }
+  if (error) return [];
 
-  return (data || []).map(o => ({
+  return (data || []).map((o: any) => ({
     id: o.id,
     userId: o.user_id,
     email: o.email,
-    items: o.items,
-    subtotal: o.subtotal || 0,
-    tax: o.tax || 0,
-    deliveryFee: o.delivery_fee || 0,
-    totalAmount: o.total,
+    subtotal: o.subtotal,
+    tax: o.tax,
+    deliveryFee: o.delivery_fee,
+    totalAmount: o.total_amount,
     status: o.status,
     createdAt: o.created_at,
-    shippingDetails: o.shipping_details
+    shippingDetails: o.shipping_details,
+    items: (o.order_items || []).map((item: any) => ({
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      imageUrl: item.image_url
+    }))
   }));
 }
 
 /**
- * Updates an order status in Supabase.
+ * Updates status using Service Role client.
  */
-export async function updateOrderStatus(orderId: string, status: Order["status"]): Promise<void> {
-  const { error } = await supabase
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
+  const admin = getSupabaseAdmin();
+  const { error } = await admin
     .from('orders')
     .update({ status })
     .eq('id', orderId);
 
-  if (error) {
-    console.error('Supabase updateOrderStatus error:', error);
-    throw error;
-  }
+  if (error) throw error;
 }

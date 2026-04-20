@@ -29,7 +29,7 @@ export default function OrdersPage() {
       if (user?.id) {
         const { data, error } = await supabase
           .from('orders')
-          .select('*')
+          .select('*, order_items(*)')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
@@ -38,11 +38,16 @@ export default function OrdersPage() {
             id: o.id,
             userId: o.user_id,
             email: o.email,
-            items: o.items,
+            items: (o.order_items || []).map((item: any) => ({
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              imageUrl: item.image_url
+            })),
             subtotal: o.subtotal || 0,
             tax: o.tax || 0,
             deliveryFee: o.delivery_fee || 0,
-            totalAmount: o.total,
+            totalAmount: o.total_amount,
             status: o.status,
             createdAt: o.created_at,
             shippingDetails: o.shipping_details
