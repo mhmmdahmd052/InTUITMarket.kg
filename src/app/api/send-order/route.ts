@@ -9,10 +9,7 @@ export const dynamic = 'force-dynamic';
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
-  console.log("🔥 API HIT: send-order");
-  return Response.json({
-    debug: "API WORKING"
-  });
+  let userId = 'unknown';
   let orderSaved = 'NO';
   let dbCheck = 'FAILED';
   let emailSent = 'NO';
@@ -21,12 +18,15 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     
-    // 1. Identify User
+    // 1. Identify User (ENFORCE AUTH)
+    console.log('[API] Attempting to identify user...');
     const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
     if (authError || !user) {
-      console.error('[API] user_id identification failed');
-      throw new Error('Authentication failed - user not detected');
+      console.error('[API] user_id identification failed - Unauthenticated');
+      throw new Error('Authentication required: You must be logged in to place an order.');
     }
+    
     userId = user.id;
     console.log(`[API] user_id: ${userId}`);
 
@@ -43,29 +43,29 @@ export async function POST(req: Request) {
       tax: body.tax || body.vat || 0,
       deliveryFee: body.deliveryFee || 0,
       totalAmount: body.totalAmount || body.total || 0,
-      status: "Processing" as const, // Start case 'Processing' match frontend types
+      status: "Processing" as const,
       createdAt: body.createdAt || new Date().toISOString(),
       shippingDetails: body.shippingDetails
     };
     
     await createRelationalOrder(orderData, userId);
-    console.log('[DB] insert result: SUCCESS');
+    console.log('[DB] success: Relational insert completed');
     orderSaved = 'YES';
 
-    // 3. Verify Insert Success (Refetch)
+    // 3. Verify Database Insert
+    console.log(`[DB] Verifying insert for ID: ${body.id}`);
     const verification = await getOrder(body.id);
     if (!verification) {
-      console.error('[DB] fetched order after insert: NOT FOUND');
-      throw new Error('Database verification failed - order not found after insert');
+      console.error('[DB] fetched order: NOT FOUND after insert');
+      throw new Error('Persistence verification failed - Order was not stored correctly.');
     }
-    console.log('[DB] fetched order after insert: VERIFIED');
+    console.log('[DB] fetched order: VERIFIED in Supabase');
     dbCheck = 'SUCCESS';
 
-    // 4. Generate Invoice
+    // 4. Generate Invoice & Send Email (AFTER DB SUCCESS)
     const invoice = generateInvoice(orderData);
-
-    // 5. Send Professional HTML Email
-    console.log('[EMAIL] sending');
+    console.log('[EMAIL] preparing send...');
+    
     const itemsHtml = orderData.items.map((item: any) => `
       <tr>
         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name}</td>
@@ -98,10 +98,10 @@ export async function POST(req: Request) {
     });
 
     if (resendResponse.error) {
-      console.error('[EMAIL] response:', resendResponse.error);
-      throw new Error(`Email failed: ${resendResponse.error.message}`);
+      console.error('[EMAIL] error:', resendResponse.error);
+      throw new Error(`Email delivery failed: ${resendResponse.error.message}`);
     }
-    console.log('[EMAIL] response: SUCCESS');
+    console.log('[EMAIL] sent: SUCCESS');
     emailSent = 'YES';
 
     return NextResponse.json({ 
@@ -110,20 +110,21 @@ export async function POST(req: Request) {
     });
 
   } catch (err: any) {
-    lastError = err.message || JSON.stringify(err);
-    console.error(`[FAIL FAST] ${lastError}`);
+    const errorMsg = err.message || JSON.stringify(err);
+    console.error(`[FAIL] ${errorMsg}`);
     
+    // Final Log Output for Debugging
     console.log(`
 [DEBUG RESULT]
 user_id: ${userId}
 order_saved: ${orderSaved}
 db_check: ${dbCheck}
 email_sent: ${emailSent}
-error: ${lastError}
+error: ${errorMsg}
     `);
 
     return NextResponse.json({ 
-      error: lastError,
+      error: errorMsg,
       debug: { userId, orderSaved, dbCheck, emailSent } 
     }, { status: 500 });
   }

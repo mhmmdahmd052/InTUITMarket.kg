@@ -13,9 +13,11 @@ export default function OrdersPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
   const orders = useOrderStore((state) => state.orders);
-  const userOrders = (orders || []).filter(o => o.userId === user?.id);
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
+  
+  // Filter user orders safely
+  const userOrders = (orders || []).filter(o => o.userId === user?.id);
 
   useEffect(() => {
     setMounted(true);
@@ -26,42 +28,53 @@ export default function OrdersPage() {
 
   useEffect(() => {
     async function syncOrders() {
-      if (user?.id) {
-        const { data, error } = await supabase
-          .from('orders')
-          .select('*, order_items(*)')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+      if (!user?.id) return;
 
-        if (data && !error) {
-          const syncedOrders = data.map((o: any) => ({
-            id: o.id,
-            userId: o.user_id,
-            email: o.email,
-            items: (o.order_items || []).map((item: any) => ({
-              name: item.name,
-              price: item.price,
-              quantity: item.quantity,
-              imageUrl: item.image_url
-            })),
-            subtotal: o.subtotal || 0,
-            tax: o.tax || 0,
-            deliveryFee: o.delivery_fee || 0,
-            totalAmount: o.total_amount,
-            status: o.status,
-            createdAt: o.created_at,
-            shippingDetails: o.shipping_details
-          }));
-          
-          useOrderStore.setState({ orders: syncedOrders });
-        }
+      console.log(`[OrdersPage] Syncing orders from Supabase for user: ${user.id}`);
+      
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('[OrdersPage] Sync error:', error.message);
+        return;
+      }
+
+      if (data) {
+        // FIX DATA MAPPING: DB -> Frontend
+        const mappedOrders = data.map((o: any) => ({
+          id: o.id,
+          userId: o.user_id,
+          email: o.email,
+          items: (o.order_items || []).map((item: any) => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            imageUrl: item.image_url
+          })),
+          subtotal: o.subtotal || 0,
+          tax: o.tax || 0,
+          deliveryFee: o.delivery_fee || 0,
+          totalAmount: o.total_amount, // MAPPING: total_amount -> totalAmount
+          status: o.status,
+          createdAt: o.created_at,
+          shippingDetails: o.shipping_details
+        }));
+
+        console.log(`[OrdersPage] Successfully synced ${mappedOrders.length} orders`);
+        
+        // HYDRATE ZUSTAND STORE SAFELY
+        useOrderStore.setState({ orders: mappedOrders });
       }
     }
 
-    if (mounted && user) {
+    if (mounted && user?.id) {
       syncOrders();
     }
-  }, [mounted, user]);
+  }, [mounted, user?.id]);
 
   if (!mounted || !user) {
     return (
@@ -95,7 +108,7 @@ export default function OrdersPage() {
           </header>
 
           <div className="grid gap-6">
-            {!(userOrders && userOrders.length > 0) ? (
+            {userOrders.length === 0 ? (
               <div className="bg-surface-container-low p-20 rounded-[40px] flex flex-col items-center justify-center text-center border border-dashed border-outline-variant/30">
                 <div className="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-8">
                   <span className="material-symbols-outlined text-secondary/40 text-5xl">inventory_2</span>
@@ -111,25 +124,25 @@ export default function OrdersPage() {
             ) : (
               userOrders.map((order) => (
                 <div 
-                  key={order?.id} 
+                  key={order.id} 
                   className="bg-surface-container-low border border-outline-variant/10 p-8 rounded-[32px] shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all hover:border-primary/20 group"
                 >
                   <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-8 border-b border-outline-variant/10 pb-8 mb-8">
                     <div className="space-y-2">
                       <div className="flex items-center gap-4">
                         <p className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-3 py-1 rounded-full border border-primary/10">
-                          {t("orders.orderId")}: {order?.id?.slice(0, 8)?.toUpperCase()}
+                          {t("orders.orderId")}: {order.id.slice(0, 8).toUpperCase()}
                         </p>
                         <span className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase border
-                         ${order?.status === 'Processing' ? 'bg-primary/10 text-primary border-primary/20' : ''}
-                         ${order?.status === 'Shipped' ? 'bg-amber-100 text-amber-800 border-amber-200' : ''}
-                         ${order?.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : ''}
-                       `}>
-                          {t(`orders.${order?.status?.toLowerCase()}`)}
+                          ${order.status === 'Processing' ? 'bg-primary/10 text-primary border-primary/20' : ''}
+                          ${order.status === 'Shipped' ? 'bg-amber-100 text-amber-800 border-amber-200' : ''}
+                          ${order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : ''}
+                        `}>
+                          {t(`orders.${order.status.toLowerCase()}`)}
                         </span>
                       </div>
                       <p className="text-lg text-on-surface font-black mt-2">
-                        {new Date(order?.createdAt || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </p>
                     </div>
                     
@@ -137,7 +150,7 @@ export default function OrdersPage() {
                       <div className="bg-surface-container-high px-6 py-3 rounded-2xl border border-outline-variant/10 text-center">
                         <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">{t("orders.total")}</p>
                         <p className="font-heading font-black text-2xl text-primary">
-                          {(order?.totalAmount || 0).toLocaleString()} <span className="text-sm">{t("cart.currency")}</span>
+                          {(order.totalAmount || 0).toLocaleString()} <span className="text-sm">{t("cart.currency")}</span>
                         </p>
                       </div>
                     </div>
@@ -145,24 +158,24 @@ export default function OrdersPage() {
 
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-8">
                     <div className="flex items-center -space-x-4">
-                        {(order.items || []).slice(0, 4).map((item, idx) => (
-                          <div key={idx} className="w-16 h-16 bg-white rounded-2xl overflow-hidden border-2 border-surface-container-high shadow-sm relative group-hover:scale-110 transition-transform duration-500" style={{ zIndex: 10 - idx }}>
-                            <img 
-                              src={item?.imageUrl} 
-                              alt={item?.name || 'Item'} 
-                              className="w-full h-full object-cover" 
-                            />
-                          </div>
-                        ))}
-                        {(order?.items?.length || 0) > 4 && (
+                      {order.items.slice(0, 4).map((item, idx) => (
+                        <div key={idx} className="w-16 h-16 bg-white rounded-2xl overflow-hidden border-2 border-surface-container-high shadow-sm relative group-hover:scale-110 transition-transform duration-500" style={{ zIndex: 10 - idx }}>
+                          <img 
+                            src={item.imageUrl} 
+                            alt={item.name} 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                      ))}
+                      {order.items.length > 4 && (
                         <div className="w-16 h-16 bg-surface-container-high rounded-2xl flex items-center justify-center font-black text-sm text-secondary border-2 border-surface-container-high relative z-0">
-                          +{(order.items.length || 0) - 4}
+                          +{order.items.length - 4}
                         </div>
                       )}
                     </div>
                     
                     <Link 
-                      href={`/orders/${order?.id}`} 
+                      href={`/orders/${order.id}`} 
                       className="w-full sm:w-auto px-8 py-3.5 bg-primary text-on-primary rounded-2xl font-black flex items-center justify-center gap-2 shadow-lg shadow-primary/10 hover:shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 group/link"
                     >
                       {t("orders.viewOrder")} 
