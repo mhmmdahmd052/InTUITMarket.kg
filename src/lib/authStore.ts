@@ -24,10 +24,17 @@ export const useAuthStore = create<AuthStore>()((set) => ({
   isInitialized: false,
   
   initialize: async () => {
-    // 1. Get initial session
-    const { data: { session } } = await supabase.auth.getSession();
+    console.log("[AUTH] Initializing...");
     
+    // 1. Get initial session
+    const { data: { session }, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      console.error("[AUTH] Session fetch error:", error);
+    }
+
     if (session?.user) {
+      console.log("[AUTH] Session found for:", session.user.email);
       set({ 
         isAuthenticated: true, 
         user: {
@@ -36,13 +43,16 @@ export const useAuthStore = create<AuthStore>()((set) => ({
           name: session.user.user_metadata?.name || '',
         }
       });
+    } else {
+      console.log("[AUTH] No initial session found.");
     }
     
     // Set initialized to true after initial session check
     set({ isInitialized: true });
 
     // 2. Listen for auth changes
-    supabase.auth.onAuthStateChange((_event, session) => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[AUTH] State Change Event:", event);
       if (session?.user) {
         set({ 
           isAuthenticated: true, 

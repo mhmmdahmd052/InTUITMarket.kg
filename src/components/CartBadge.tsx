@@ -20,14 +20,14 @@ export default function CartBadge() {
 
   if (!mounted) {
     return (
-      <div className="relative p-2 text-slate-600 dark:text-slate-400 group inline-flex">
+      <div className="relative p-2 text-white/50 group inline-flex">
         <span className="material-symbols-outlined">shopping_cart</span>
       </div>
     );
   }
 
   return (
-    <Link href="/cart" className="relative p-2 text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors hover:scale-105 duration-300 group inline-flex">
+    <Link href="/cart" className="relative p-2 text-white/70 hover:text-white transition-colors hover:scale-105 duration-300 group inline-flex">
       <span className="material-symbols-outlined group-hover:drop-shadow-sm">shopping_cart</span>
       {totalItems > 0 && (
         <span className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-lg border border-white dark:border-slate-800 translate-x-1 -translate-y-1">
