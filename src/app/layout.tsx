@@ -18,24 +18,31 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://intuitmarket.store'),
-  title: "InTUITMarket - Premium Digital Marketplace",
-  description: "Experience excellence with InTUITMarket. Premium high-end architectural and engineering supplies.",
+  title: "InTUITMarket",
+  description: "Premium digital marketplace",
   icons: {
-    icon: '/logo.png',
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   openGraph: {
     title: "InTUITMarket",
-    description: "Premium digital marketplace for high-end supplies.",
+    description: "Premium digital marketplace",
     url: "https://intuitmarket.store",
     siteName: "InTUITMarket",
-    images: [{ url: 'https://intuitmarket.store/logo.png', width: 600, height: 600 }],
+    images: [{ 
+      url: 'https://intuitmarket.store/og-image.png?v=2', 
+      width: 1200, 
+      height: 630 
+    }],
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "InTUITMarket",
     description: "Premium digital marketplace",
-    images: ['https://intuitmarket.store/logo.png'],
+    images: ['https://intuitmarket.store/og-image.png?v=2'],
   },
   manifest: '/site.webmanifest',
 };

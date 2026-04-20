@@ -47,7 +47,12 @@ export async function sendOrderEmail(order: any, type: string) {
         
         <!-- HEADER -->
         <div style="background: #000; color: #fff; padding: 30px; text-align: center;">
-          <img src="https://intuitmarket.store/logo.png" alt="InTUITMarket Logo" style="height: 50px; margin-bottom: 10px;" />
+          <img 
+            src="https://intuitmarket.store/logo.png" 
+            alt="InTUITMarket Logo" 
+            width="120"
+            style="margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;" 
+          />
           <h2 style="margin: 0; letter-spacing: 2px;">InTUITMarket</h2>
         </div>
 
@@ -108,6 +113,17 @@ export async function sendOrderEmail(order: any, type: string) {
           </div>
           <p style="font-size: 0.9rem; color: #666;">Visit our tracking page to see real-time updates on your shipment.</p>
           `
+          }
+
+          ${
+            type === "delivered"
+              ? `
+          <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #64748b; font-size: 0.85rem;">
+            <p style="margin-bottom: 5px;">Thank you for shopping with InTUITMarket.</p>
+            <p>We appreciate your trust and look forward to serving you again.</p>
+          </div>
+          `
+              : ""
           }
         </div>
 
