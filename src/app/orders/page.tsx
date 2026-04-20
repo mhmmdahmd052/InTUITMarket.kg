@@ -16,7 +16,7 @@ export default function OrdersPage() {
   const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   
-  // Filter user orders safely
+  // Clean user orders filtering
   const userOrders = (orders || []).filter(o => o.userId === user?.id);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function OrdersPage() {
     async function syncOrders() {
       if (!user?.id) return;
 
-      console.log(`[OrdersPage] Syncing orders from Supabase for user: ${user.id}`);
+      console.log(`[OrdersPage] FETCHING from Supabase for user: ${user.id}`);
       
       const { data, error } = await supabase
         .from('orders')
@@ -44,7 +44,7 @@ export default function OrdersPage() {
       }
 
       if (data) {
-        // FIX DATA MAPPING: DB -> Frontend
+        // DATA MAPPING: DB -> Frontend
         const mappedOrders = data.map((o: any) => ({
           id: o.id,
           userId: o.user_id,
@@ -58,13 +58,13 @@ export default function OrdersPage() {
           subtotal: o.subtotal || 0,
           tax: o.tax || 0,
           deliveryFee: o.delivery_fee || 0,
-          totalAmount: o.total_amount, // MAPPING: total_amount -> totalAmount
+          totalAmount: o.total_amount, // ENSURE: total_amount -> totalAmount
           status: o.status,
           createdAt: o.created_at,
           shippingDetails: o.shipping_details
         }));
 
-        console.log(`[OrdersPage] Successfully synced ${mappedOrders.length} orders`);
+        console.log(`[OrdersPage] Hydrating Zustand with ${mappedOrders.length} orders`);
         
         // HYDRATE ZUSTAND STORE SAFELY
         useOrderStore.setState({ orders: mappedOrders });
