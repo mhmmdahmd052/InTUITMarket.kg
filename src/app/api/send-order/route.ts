@@ -98,43 +98,53 @@ export async function POST(req: Request) {
 
     // 4. Generate Invoice & Send Email
     const invoice = generateInvoice(orderData);
-    console.log('[EMAIL] sending confirmation...');
-    
-    const itemsHtml = orderData.items.map((item: any) => `
-      <tr>
-        <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${Number(item.price).toLocaleString()} ₸</td>
-      </tr>
-    `).join('');
+    const targetEmail = orderData.email || email || user.email;
 
-    const resendResponse = await resend.emails.send({
-      from: 'InTUIT Market <orders@intuitmarket.store>',
-      to: orderData.email,
-      subject: 'Order Confirmation – InTUITMarket',
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-          <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Order Confirmed</h1>
-          <p>Thank you for your order, <strong>${shippingDetails?.fullName || 'Customer'}</strong>.</p>
-          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
-             <p><strong>Invoice ID:</strong> ${invoice.invoiceId}</p>
-             <p><strong>Order ID:</strong> ${orderData.id}</p>
-          </div>
-          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-            ${itemsHtml}
-          </table>
-          <div style="text-align: right; font-weight: bold; font-size: 1.25rem;">
-            Total: ${Number(orderData.totalAmount).toLocaleString()} ₸
-          </div>
-        </div>
-      `
-    });
-
-    if (resendResponse.error) {
-      console.error('[EMAIL] error:', resendResponse.error);
+    if (!targetEmail) {
+      console.warn('[EMAIL] No target email found for order confirmation');
     } else {
-      console.log('[EMAIL] sent: SUCCESS');
-      emailSent = 'YES';
+      console.log(`[EMAIL] sending confirmation to ${targetEmail}...`);
+      
+      const itemsHtml = (orderData.items || []).map((item: any) => `
+        <tr>
+          <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name || 'Product'}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: center;">${item.quantity || 1}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #eee; text-align: right;">${Number(item.price || 0).toLocaleString()} ₸</td>
+        </tr>
+      `).join('');
+
+      try {
+        const resendResponse = await resend.emails.send({
+          from: 'InTUIT Market <orders@intuitmarket.store>',
+          to: targetEmail,
+          subject: 'Order Confirmation – InTUITMarket',
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+              <h1 style="color: #2563eb; border-bottom: 2px solid #2563eb; padding-bottom: 10px;">Order Confirmed</h1>
+              <p>Thank you for your order, <strong>${shippingDetails?.fullName || 'Customer'}</strong>.</p>
+              <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                 <p><strong>Invoice ID:</strong> ${invoice.invoiceId}</p>
+                 <p><strong>Order ID:</strong> ${orderData.id}</p>
+              </div>
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                ${itemsHtml}
+              </table>
+              <div style="text-align: right; font-weight: bold; font-size: 1.25rem;">
+                Total: ${Number(orderData.totalAmount).toLocaleString()} ₸
+              </div>
+            </div>
+          `
+        });
+
+        if (resendResponse.error) {
+          console.error('[EMAIL] Resend returned error:', resendResponse.error);
+        } else {
+          console.log('[EMAIL] sent: SUCCESS');
+          emailSent = 'YES';
+        }
+      } catch (emailErr) {
+        console.error('[EMAIL] Exception occurred during sending:', emailErr);
+      }
     }
 
     return NextResponse.json({ 

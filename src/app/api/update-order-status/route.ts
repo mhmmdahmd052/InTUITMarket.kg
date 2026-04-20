@@ -42,29 +42,39 @@ export async function POST(req: Request) {
     const subject = SUBJECT_MAP[status as OrderStatus] || 'Order Update – InTUITMarket';
     const message = MESSAGE_MAP[status as OrderStatus] || 'Your order status has been updated.';
 
-    await resend.emails.send({
-      from: 'InTUIT Market <orders@intuitmarket.store>',
-      to: email,
-      subject: subject,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
-          <h1 style="color: #2563eb;">Order Status Update</h1>
-          <p>Hello,</p>
-          <p>The status of your order <strong>#${orderId}</strong> has changed.</p>
-          
-          <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
-            <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin-bottom: 10px;">New Status</p>
-            <p style="font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0;">${status}</p>
+    try {
+      const resendResponse = await resend.emails.send({
+        from: 'InTUIT Market <orders@intuitmarket.store>',
+        to: email,
+        subject: subject,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
+            <h1 style="color: #2563eb;">Order Status Update</h1>
+            <p>Hello,</p>
+            <p>The status of your order <strong>#${orderId}</strong> has changed.</p>
+            
+            <div style="background: #f1f5f9; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
+              <p style="text-transform: uppercase; letter-spacing: 0.1em; font-weight: bold; color: #64748b; margin-bottom: 10px;">New Status</p>
+              <p style="font-size: 1.5rem; font-weight: 900; color: #0f172a; margin: 0;">${status}</p>
+            </div>
+  
+            <p style="font-size: 1.1rem;">${message}</p>
+  
+            <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #666; text-align: center;">
+              <p>&copy; ${new Date().getFullYear()} InTUIT Market. Real-time Status System.</p>
+            </footer>
           </div>
+        `
+      });
 
-          <p style="font-size: 1.1rem;">${message}</p>
-
-          <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #666; text-align: center;">
-            <p>&copy; ${new Date().getFullYear()} InTUIT Market. Real-time Status System.</p>
-          </footer>
-        </div>
-      `
-    });
+      if (resendResponse.error) {
+        console.error('[STATUS EMAIL] Resend returned error:', resendResponse.error);
+      } else {
+        console.log('[STATUS EMAIL] Sent: SUCCESS');
+      }
+    } catch (emailErr) {
+      console.error('[STATUS EMAIL] Exception occurred during sending:', emailErr);
+    }
 
     return NextResponse.json({ success: true, newStatus: status });
 

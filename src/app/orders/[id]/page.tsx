@@ -30,12 +30,30 @@ export default function OrderTrackingPage() {
 
     const currentStageIndex = STAGES.indexOf(order.status);
     if (currentStageIndex >= 0 && currentStageIndex < STAGES.length - 1) {
-      const timer = setTimeout(() => {
-        updateOrderStatus(order.id, STAGES[currentStageIndex + 1]);
+      const nextStatus = STAGES[currentStageIndex + 1];
+      const timer = setTimeout(async () => {
+        // 1. Update local store
+        updateOrderStatus(order.id, nextStatus);
+        
+        // 2. Trigger email notification via API
+        try {
+          await fetch('/api/update-order-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: order.id,
+              status: nextStatus,
+              email: order.shippingDetails?.email || user?.email
+            })
+          });
+          console.log(`[STATUS] Updated to ${nextStatus} and email sent.`);
+        } catch (err) {
+          console.error("[STATUS] Failed to trigger update email:", err);
+        }
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [mounted, order, updateOrderStatus]);
+  }, [mounted, order, updateOrderStatus, user?.email]);
 
   if (!mounted || !order) {
     return (
