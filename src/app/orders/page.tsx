@@ -7,6 +7,7 @@ import { useAuthStore } from "@/lib/authStore";
 import { useOrderStore } from "@/lib/orderStore";
 import ProtectedLayout from "@/components/layout/ProtectedLayout";
 import { useTranslation } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -22,6 +23,40 @@ export default function OrdersPage() {
       router.replace(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
     }
   }, [isAuthenticated, router, mounted]);
+
+  useEffect(() => {
+    async function syncOrders() {
+      if (user?.id) {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (data && !error) {
+          const syncedOrders = data.map((o: any) => ({
+            id: o.id,
+            userId: o.user_id,
+            email: o.email,
+            items: o.items,
+            subtotal: o.subtotal || 0,
+            tax: o.tax || 0,
+            deliveryFee: o.delivery_fee || 0,
+            totalAmount: o.total,
+            status: o.status,
+            createdAt: o.created_at,
+            shippingDetails: o.shipping_details
+          }));
+          
+          useOrderStore.setState({ orders: syncedOrders });
+        }
+      }
+    }
+
+    if (mounted && user) {
+      syncOrders();
+    }
+  }, [mounted, user]);
 
   if (!mounted || !user) {
     return (

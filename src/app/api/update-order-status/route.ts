@@ -26,14 +26,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // 1. Update status in persistence layer
+    // 1. Update status in Supabase
     await updateOrderStatus(orderId, status);
 
-    // 2. Fetch updated order for email context
+    // 2. Fetch updated order from DB
     const order = await getOrder(orderId);
     
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Order not found in Supabase' }, { status: 404 });
     }
 
     // 3. Send Status Update Email
@@ -57,12 +57,8 @@ export async function POST(req: Request) {
 
           <p style="font-size: 1.1rem;">${message}</p>
 
-          <div style="margin-top: 30px; padding: 20px; border-top: 1px solid #eee;">
-             <p><strong>Order Summary Total:</strong> ${Number(order.total).toLocaleString()} ₸</p>
-          </div>
-
           <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #666; text-align: center;">
-            <p>&copy; ${new Date().getFullYear()} InTUIT Market. Order Persistence System.</p>
+            <p>&copy; ${new Date().getFullYear()} InTUIT Market. Real-time Status System.</p>
           </footer>
         </div>
       `

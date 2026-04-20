@@ -1,36 +1,47 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { createOrder } from '@/lib/serverOrderStore';
+import { createOrder, Order } from '@/lib/serverOrderStore';
 import { generateInvoice } from '@/lib/invoice';
+import { supabase } from '@/lib/supabase';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const email = body?.shippingDetails?.email || body?.email;
+    
+    // 1. Get Authenticated User from Session
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!email) {
-      return NextResponse.json({ error: 'Missing email' }, { status: 400 });
+    if (authError || !user) {
+      console.error("Auth Error in API:", authError);
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 1. Persist Order in Server Store
-    const orderData = {
+    const email = user.email || body?.shippingDetails?.email || body?.email;
+
+    // 2. Persist Order in Supabase
+    // Ensure we match the strict Order type from serverOrderStore/frontend
+    const orderData: Order = {
       id: body.id,
+      userId: user.id,
       email: email,
       items: body.items || [],
-      total: body.totalAmount || body.total || 0,
-      status: "processing" as const,
+      subtotal: body.subtotal || 0,
+      tax: body.tax || body.vat || 0,
+      deliveryFee: body.deliveryFee || 0,
+      totalAmount: body.totalAmount || body.total || 0,
+      status: "Processing" as const, // Match 'Processing' start case from frontend types
       createdAt: body.createdAt || new Date().toISOString(),
       shippingDetails: body.shippingDetails
     };
     
-    await createOrder(orderData);
+    await createOrder(orderData, user.id);
 
-    // 2. Generate Invoice
+    // 3. Generate Invoice
     const invoice = generateInvoice(orderData);
 
-    // 3. Send Professional HTML Email
+    // 4. Send Professional HTML Email
     const itemsHtml = orderData.items.map((item: any) => `
       <tr>
         <td style="padding: 12px; border-bottom: 1px solid #eee;">${item.name}</td>
@@ -69,7 +80,7 @@ export async function POST(req: Request) {
           </table>
 
           <div style="text-align: right; font-size: 1.25rem; font-weight: bold; margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee;">
-            Total: ${Number(orderData.total).toLocaleString()} ₸
+            Total: ${Number(orderData.totalAmount).toLocaleString()} ₸
           </div>
 
           <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #666; text-align: center;">
