@@ -243,31 +243,29 @@ export default function SettingsPage() {
               <div className="mt-10 pt-8 border-t border-outline-variant/10">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-error mb-1">{t("settings.dangerZone") || "Danger Zone"}</h3>
-                    <p className="text-xs text-secondary font-medium">{t("settings.deleteDesc") || "Permanently delete your account and all associated data"}</p>
+                    <h3 className="text-sm font-semibold uppercase tracking-widest text-error mb-1">{t("settings.dangerZone") || "Danger Zone"}</h3>
+                    <p className="text-sm text-secondary opacity-80">{t("settings.deleteDesc") || "Permanently delete your account and all associated data"}</p>
                   </div>
                   <button 
                     onClick={async () => {
                       if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
                         try {
                           const res = await fetch('/api/delete-account', { 
-                            method: 'POST',
-                            credentials: 'include'
+                            method: 'POST'
                           });
                           const data = await res.json();
-                          if (data.success) {
-                            toast.success(t("settings.deleteSuccess") || "Account deleted successfully");
-                            await supabase.auth.signOut();
-                            window.location.href = "/";
-                          } else {
-                            toast.error(t(data.error) || t("settings.deleteFailed") || "Failed to delete account");
-                          }
+                          if (!res.ok) throw new Error(data.error || 'Delete failed');
+                          
+                          toast.success(t("settings.deleteSuccess") || "Account deleted successfully");
+                          await supabase.auth.signOut();
+                          window.location.href = "/";
                         } catch (err) {
-                          toast.error(t("settings.deleteError") || "An error occurred during deletion");
+                          console.error(err);
+                          alert('Failed to delete account');
                         }
                       }
                     }} 
-                    className="px-6 py-3 bg-error/5 text-error border border-error/20 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-error hover:text-on-error transition-all active:scale-95 whitespace-nowrap"
+                    className="px-6 py-3 bg-error text-on-error rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
                   >
                     {t("settings.deleteButton") || "Delete Account"}
                   </button>
@@ -276,34 +274,34 @@ export default function SettingsPage() {
             </section>
 
             <section className="bg-surface-container-low p-4 rounded-[40px] border border-outline-variant/10 shadow-sm">
-              <h2 className="text-2xl font-black font-heading mb-8 flex items-center gap-3">
-                <span className="material-symbols-outlined text-primary">dark_mode</span>
+              <h2 className="text-xl font-semibold font-heading mb-6 flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary text-2xl">dark_mode</span>
                 {t("settings.theme") || t("settings.preferredTheme") || "Preferred Theme"}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button 
                   onClick={() => setTheme('light')}
-                  className={`flex flex-col items-center gap-4 p-8 rounded-[32px] border-2 transition-all active:scale-95 ${theme === 'light' ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' : 'border-outline-variant/10 hover:border-primary/30'}`}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all active:scale-95 ${theme === 'light' ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' : 'border-outline-variant/10 hover:border-primary/30'}`}
                 >
                   <span className="material-symbols-outlined text-4xl text-primary">light_mode</span>
-                  <span className="font-black uppercase tracking-widest text-xs">{t("settings.light")}</span>
+                  <span className="font-semibold uppercase tracking-widest text-xs">{t("settings.light")}</span>
                 </button>
                 <button 
                   onClick={() => setTheme('dark')}
-                  className={`flex flex-col items-center gap-4 p-8 rounded-[32px] border-2 transition-all active:scale-95 ${theme === 'dark' ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' : 'border-outline-variant/10 hover:border-primary/30'}`}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all active:scale-95 ${theme === 'dark' ? 'border-primary bg-primary/5 shadow-lg shadow-primary/10' : 'border-outline-variant/10 hover:border-primary/30'}`}
                 >
                   <span className="material-symbols-outlined text-4xl text-primary">dark_mode</span>
-                  <span className="font-black uppercase tracking-widest text-xs">{t("settings.dark")}</span>
+                  <span className="font-semibold uppercase tracking-widest text-xs">{t("settings.dark")}</span>
                 </button>
               </div>
             </section>
 
             <section className="bg-surface-container-low p-4 rounded-[40px] border border-outline-variant/10 shadow-sm">
-              <h2 className="text-2xl font-black font-heading mb-8 flex items-center gap-3">
-                <span className="material-symbols-outlined text-primary">translate</span>
+              <h2 className="text-xl font-semibold font-heading mb-6 flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary text-2xl">translate</span>
                 {t("settings.language")}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                  {[
                    { id: "en", label: t("settings.english") },
                    { id: "ar", label: t("settings.arabic") },
@@ -312,7 +310,7 @@ export default function SettingsPage() {
                    <button 
                       key={lang.id}
                       onClick={() => setLanguage(lang.id as any)}
-                      className={`group relative overflow-hidden py-4 rounded-2xl font-black text-sm border-2 transition-all active:scale-95 ${language === lang.id ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/5' : 'border-outline-variant/10 hover:border-primary/30 text-secondary'}`}
+                      className={`group relative overflow-hidden py-3 rounded-xl font-semibold text-sm border-2 transition-all active:scale-95 ${language === lang.id ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/5' : 'border-outline-variant/10 hover:border-primary/30 text-secondary'}`}
                    >
                       {lang.label}
                       {language === lang.id && (

@@ -41,9 +41,9 @@ export async function POST() {
     await sendDeleteAccountEmail(user.email!)
     console.log("[EMAIL] sent")
 
-    return NextResponse.json({ success: true })
+    return Response.json({ success: true })
   } catch (err: any) {
     console.error('[API] unexpected error:', err)
-    return NextResponse.json({ error: 'Deletion failed' }, { status: 500 })
+    return Response.json({ error: 'Deletion failed' }, { status: 500 })
   }
 }
