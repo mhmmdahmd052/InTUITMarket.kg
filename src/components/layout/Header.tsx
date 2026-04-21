@@ -30,7 +30,7 @@ export default function Header() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background shadow-sm border-b border-outline-variant/10 transition-colors duration-300">
+    <nav className="fixed top-0 w-full z-50 bg-white dark:bg-black border-b border-outline-variant/10 transition-colors duration-300">
       <div className="relative flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
         <div className="flex items-center gap-8">
           <Link href="/" onClick={closeMenu} className="hover:opacity-80 transition-opacity">
@@ -44,7 +44,7 @@ export default function Header() {
                 className={`transition-all pb-1 font-heading font-bold tracking-tight text-sm uppercase ${
                   isActive(link.href) 
                     ? "text-primary border-b-2 border-primary" 
-                    : "text-foreground/70 hover:text-foreground"
+                    : "text-black dark:text-white"
                 }`}
               >
                 {link.label}
@@ -73,7 +73,7 @@ export default function Header() {
           {/* Hamburger Button */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-foreground/70 hover:text-foreground transition-colors flex items-center justify-center"
+            className="md:hidden p-2 text-black dark:text-white transition-colors flex items-center justify-center"
           >
             <span className="material-symbols-outlined text-2xl">
               {isMenuOpen ? 'close' : 'menu'}
@@ -83,7 +83,7 @@ export default function Header() {
 
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-background border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col">
+          <div className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-white dark:bg-black border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col">
             <div className="px-6 py-4 space-y-4 border-b border-gray-100 dark:border-gray-800">
               {navLinks.map((link) => (
                 <Link 
@@ -91,7 +91,7 @@ export default function Header() {
                   href={link.href}
                   onClick={closeMenu}
                   className={`block text-sm font-black uppercase tracking-widest ${
-                    isActive(link.href) ? "text-primary" : "text-foreground/70 hover:text-foreground"
+                    isActive(link.href) ? "text-primary" : "text-black dark:text-white"
                   }`}
                 >
                   {link.label}
@@ -133,11 +133,11 @@ export default function Header() {
             </div>
 
             <div className="px-6 py-6 space-y-4">
-              <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground/70 hover:text-foreground transition-colors">
+              <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-black dark:text-white transition-colors">
                 <span className="material-symbols-outlined text-lg">account_circle</span>
                 {t("header.account")}
               </Link>
-              <Link href="/settings" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground/70 hover:text-foreground transition-colors">
+              <Link href="/settings" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-black dark:text-white transition-colors">
                 <span className="material-symbols-outlined text-lg">settings</span>
                 {t("header.settings")}
               </Link>

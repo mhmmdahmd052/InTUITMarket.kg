@@ -19,9 +19,9 @@ export async function POST() {
       }
     )
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (error || !user) {
       console.log("[AUTH] unauthorized")
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
