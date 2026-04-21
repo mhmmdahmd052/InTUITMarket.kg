@@ -194,7 +194,15 @@
     "theme": "تفضيل المظهر",
     "light": "فاتح",
     "dark": "داكن",
-    "loadingSettings": "جاري تحميل الإعدادات..."
+    "loadingSettings": "جاري تحميل الإعدادات...",
+    "dangerZone": "منطقة الخطر",
+    "deleteDesc": "حذف حسابك نهائياً وجميع البيانات المرتبطة به",
+    "deleteConfirm": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+    "deleteButton": "حذف الحساب",
+    "deleteSuccess": "تم حذف الحساب بنجاح",
+    "deleteFailed": "فشل حذف الحساب",
+    "deleteError": "حدث خطأ أثناء الحذف",
+    "preferredTheme": "السمة المفضلة"
   },
   "support": {
     "getInTouch": "ابق على تواصل.",

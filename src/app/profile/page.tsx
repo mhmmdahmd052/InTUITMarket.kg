@@ -68,27 +68,27 @@ export default function ProfilePage() {
             {/* Quick Actions Grid */}
             <section className="lg:col-span-8 space-y-10">
                <div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-8 ml-2">{t("profile.quickAccess")}</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                     <Link href="/orders" className="p-10 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 rounded-[40px] group transition-all hover:shadow-2xl hover:shadow-primary/5 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-700"></div>
-                        <span className="material-symbols-outlined text-primary text-4xl mb-6 block relative z-10">dock</span>
-                        <h4 className="font-black text-2xl mb-3 group-hover:text-primary transition-colors relative z-10 tracking-tight">{t("orders.title")}</h4>
-                        <p className="text-sm text-secondary font-medium leading-relaxed relative z-10">{t("profile.ordersDesc")}</p>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4 ml-6">{t("profile.quickAccess")}</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                     <Link href="/orders" className="p-3 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 rounded-2xl group transition-all hover:shadow-xl relative overflow-hidden flex flex-col items-center text-center">
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-full -translate-y-8 translate-x-8 group-hover:scale-150 transition-transform duration-700"></div>
+                        <span className="material-symbols-outlined text-primary text-base mb-2 block relative z-10">dock</span>
+                        <h4 className="font-black text-sm mb-1 group-hover:text-primary transition-colors relative z-10 tracking-tight">{t("orders.title")}</h4>
+                        <p className="text-[10px] text-secondary font-medium leading-tight relative z-10 opacity-70">{t("profile.ordersDesc")}</p>
                      </Link>
 
-                     <Link href="/support" className="p-10 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 rounded-[40px] group transition-all hover:shadow-2xl hover:shadow-primary/5 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-700"></div>
-                        <span className="material-symbols-outlined text-primary text-4xl mb-6 block relative z-10">support_agent</span>
-                        <h4 className="font-black text-2xl mb-3 group-hover:text-primary transition-colors relative z-10 tracking-tight">{t("header.contact")}</h4>
-                        <p className="text-sm text-secondary font-medium leading-relaxed relative z-10">{t("profile.supportDesc")}</p>
+                     <Link href="/support" className="p-3 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 rounded-2xl group transition-all hover:shadow-xl relative overflow-hidden flex flex-col items-center text-center">
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-full -translate-y-8 translate-x-8 group-hover:scale-150 transition-transform duration-700"></div>
+                        <span className="material-symbols-outlined text-primary text-base mb-2 block relative z-10">support_agent</span>
+                        <h4 className="font-black text-sm mb-1 group-hover:text-primary transition-colors relative z-10 tracking-tight">{t("header.contact")}</h4>
+                        <p className="text-[10px] text-secondary font-medium leading-tight relative z-10 opacity-70">{t("profile.supportDesc")}</p>
                      </Link>
 
-                     <Link href="/products" className="p-10 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 rounded-[40px] group transition-all hover:shadow-2xl hover:shadow-primary/5 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-700"></div>
-                        <span className="material-symbols-outlined text-primary text-4xl mb-6 block relative z-10">inventory_2</span>
-                        <h4 className="font-black text-2xl mb-3 group-hover:text-primary transition-colors relative z-10 tracking-tight">{t("header.catalog")}</h4>
-                        <p className="text-sm text-secondary font-medium leading-relaxed relative z-10">{t("profile.catalogDesc")}</p>
+                     <Link href="/products" className="p-3 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/10 rounded-2xl group transition-all hover:shadow-xl relative overflow-hidden flex flex-col items-center text-center">
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-full -translate-y-8 translate-x-8 group-hover:scale-150 transition-transform duration-700"></div>
+                        <span className="material-symbols-outlined text-primary text-base mb-2 block relative z-10">inventory_2</span>
+                        <h4 className="font-black text-sm mb-1 group-hover:text-primary transition-colors relative z-10 tracking-tight">{t("header.catalog")}</h4>
+                        <p className="text-[10px] text-secondary font-medium leading-tight relative z-10 opacity-70">{t("profile.catalogDesc")}</p>
                      </Link>
 
                   </div>

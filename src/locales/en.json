@@ -194,7 +194,15 @@
     "theme": "Theme Preference",
     "light": "Light",
     "dark": "Dark",
-    "loadingSettings": "Loading Settings..."
+    "loadingSettings": "Loading Settings...",
+    "dangerZone": "Danger Zone",
+    "deleteDesc": "Permanently delete your account and all associated data",
+    "deleteConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+    "deleteButton": "Delete Account",
+    "deleteSuccess": "Account deleted successfully",
+    "deleteFailed": "Failed to delete account",
+    "deleteError": "An error occurred during deletion",
+    "preferredTheme": "Preferred Theme"
   },
   "support": {
     "getInTouch": "GET IN TOUCH.",

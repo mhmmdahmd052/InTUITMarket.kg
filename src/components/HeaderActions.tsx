@@ -28,7 +28,7 @@ export default function HeaderActions() {
             className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
               language === lang 
                 ? "bg-primary text-on-primary shadow-sm" 
-                : "text-white/60 hover:text-white"
+                : "text-black dark:text-white hover:opacity-80"
             }`}
           >
             {lang}
@@ -38,16 +38,16 @@ export default function HeaderActions() {
 
       <CartBadge />
       <div className="hidden md:flex gap-4 items-center">
-        <Link href="/profile" className="text-white/70 hover:text-white transition-colors duration-300 ease-in-out hover:scale-105">
+        <Link href="/profile" className="text-black dark:text-white hover:opacity-100 opacity-70 transition-all duration-300 ease-in-out hover:scale-105">
           <span className="material-symbols-outlined font-icon" data-icon="account_circle">account_circle</span>
         </Link>
-        <Link href="/settings" className="text-white/70 hover:text-white transition-colors duration-300 ease-in-out hover:scale-105">
+        <Link href="/settings" className="text-black dark:text-white hover:opacity-100 opacity-70 transition-all duration-300 ease-in-out hover:scale-105">
           <span className="material-symbols-outlined font-icon" data-icon="settings">settings</span>
         </Link>
         {isAuthenticated && (
           <button
             onClick={() => logout()}
-            className="text-white/70 hover:text-error transition-colors duration-300 ease-in-out flex items-center gap-1 text-xs font-bold uppercase cursor-pointer"
+            className="text-black dark:text-white hover:opacity-100 opacity-70 hover:text-error transition-all duration-300 ease-in-out flex items-center gap-1 text-xs font-bold uppercase cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">logout</span>
             <span>{t("header.logout")}</span>

@@ -141,8 +141,8 @@ export default function SettingsPage() {
             </button>
           </header>
 
-          <div className="grid gap-8">
-            <section className="bg-surface-container-low p-8 md:p-10 rounded-[40px] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
+          <div className="grid gap-2">
+            <section className="bg-surface-container-low p-4 rounded-[40px] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl transition-all group-hover:scale-150 duration-700"></div>
               
               <h2 className="text-2xl font-black font-heading mb-8 flex items-center gap-3">
@@ -243,40 +243,42 @@ export default function SettingsPage() {
               <div className="mt-10 pt-8 border-t border-outline-variant/10">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-error mb-1">Danger Zone</h3>
-                    <p className="text-xs text-secondary font-medium">Permanently delete your account and all associated data</p>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-error mb-1">{t("settings.dangerZone") || "Danger Zone"}</h3>
+                    <p className="text-xs text-secondary font-medium">{t("settings.deleteDesc") || "Permanently delete your account and all associated data"}</p>
                   </div>
                   <button 
                     onClick={async () => {
-                      if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                      if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
                         try {
-                          const res = await fetch('/api/delete-account', { method: 'POST' });
+                          const res = await fetch('/api/delete-account', { 
+                            method: 'POST',
+                            credentials: 'include'
+                          });
                           const data = await res.json();
                           if (data.success) {
-                            toast.success("Account deleted successfully");
+                            toast.success(t("settings.deleteSuccess") || "Account deleted successfully");
                             logout();
                             router.push("/");
                           } else {
-                            toast.error(data.error || "Failed to delete account");
+                            toast.error(t(data.error) || t("settings.deleteFailed") || "Failed to delete account");
                           }
                         } catch (err) {
-                          toast.error("An error occurred during deletion");
+                          toast.error(t("settings.deleteError") || "An error occurred during deletion");
                         }
                       }
                     }} 
                     className="px-6 py-3 bg-error/5 text-error border border-error/20 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-error hover:text-on-error transition-all active:scale-95 whitespace-nowrap"
                   >
-                    Delete Account
+                    {t("settings.deleteButton") || "Delete Account"}
                   </button>
                 </div>
               </div>
             </section>
 
-            {/* NEW THEME SELECTOR SECTION */}
-            <section className="bg-surface-container-low p-8 md:p-10 rounded-[40px] border border-outline-variant/10 shadow-sm">
+            <section className="bg-surface-container-low p-4 rounded-[40px] border border-outline-variant/10 shadow-sm">
               <h2 className="text-2xl font-black font-heading mb-8 flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary">dark_mode</span>
-                {t("settings.theme") || "Preferred Theme"}
+                {t("settings.theme") || t("settings.preferredTheme") || "Preferred Theme"}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button 
@@ -296,7 +298,7 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            <section className="bg-surface-container-low p-8 md:p-10 rounded-[40px] border border-outline-variant/10 shadow-sm">
+            <section className="bg-surface-container-low p-4 rounded-[40px] border border-outline-variant/10 shadow-sm">
               <h2 className="text-2xl font-black font-heading mb-8 flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary">translate</span>
                 {t("settings.language")}
@@ -324,7 +326,7 @@ export default function SettingsPage() {
               </div>
             </section>
 
-            <section className="bg-surface-container-low p-8 md:p-10 rounded-[40px] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
+            <section className="bg-surface-container-low p-4 rounded-[40px] border border-outline-variant/10 shadow-sm relative overflow-hidden group">
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/5 rounded-full -ml-16 -mb-16 blur-3xl transition-all group-hover:scale-150 duration-700"></div>
               
               <h2 className="text-2xl font-black font-heading mb-8 flex items-center gap-3">

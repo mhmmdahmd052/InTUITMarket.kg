@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HeaderActions from "../HeaderActions";
@@ -14,6 +14,21 @@ export default function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { isAuthenticated, logout } = useAuthStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
@@ -83,7 +98,7 @@ export default function Header() {
 
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-white dark:bg-black border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col">
+          <div ref={menuRef} className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-white dark:bg-black border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col transition-all duration-300">
             <div className="px-6 py-4 space-y-4 border-b border-gray-100 dark:border-gray-800">
               {navLinks.map((link) => (
                 <Link 
@@ -104,7 +119,7 @@ export default function Header() {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary opacity-50">{t("settings.theme")}</span>
                 <button 
                   onClick={() => { toggleTheme(); closeMenu(); }}
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/70"
+                  className="p-2 rounded-lg bg-white/5 border border-white/10 text-black dark:text-white"
                 >
                   <span className="material-symbols-outlined text-sm">
                     {theme === 'dark' ? 'light_mode' : 'dark_mode'}
