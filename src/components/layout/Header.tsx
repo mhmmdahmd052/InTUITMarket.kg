@@ -123,7 +123,7 @@ export default function Header() {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary opacity-50">{t("settings.theme")}</span>
                 <button 
                   onClick={() => { toggleTheme(); closeMenu(); }}
-                  className="p-2 rounded-lg bg-surface-container-low border border-outline-variant/10 text-on-surface/70"
+                  className="p-2 rounded-lg bg-surface-container-low border border-outline-variant/10 text-foreground/70"
                 >
                   <span className="material-symbols-outlined text-sm">
                     {theme === 'dark' ? 'light_mode' : 'dark_mode'}

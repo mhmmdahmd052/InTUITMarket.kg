@@ -64,7 +64,7 @@ export default function RootLayout({
         ` }} />
       </head>
       <body
-        className={`${inter.variable} ${manrope.variable} font-sans min-h-screen flex flex-col antialiased bg-background text-on-surface selection:bg-primary/30 transition-colors duration-300`}
+        className={`${inter.variable} ${manrope.variable} font-sans min-h-screen flex flex-col antialiased bg-background text-foreground selection:bg-primary/30 transition-colors duration-300`}
       >
         <I18nProvider>
           <Header />
