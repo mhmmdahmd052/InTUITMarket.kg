@@ -257,8 +257,8 @@ export default function SettingsPage() {
                           const data = await res.json();
                           if (data.success) {
                             toast.success(t("settings.deleteSuccess") || "Account deleted successfully");
-                            logout();
-                            router.push("/");
+                            await supabase.auth.signOut();
+                            window.location.href = "/";
                           } else {
                             toast.error(t(data.error) || t("settings.deleteFailed") || "Failed to delete account");
                           }
