@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HeaderActions from "../HeaderActions";
@@ -14,7 +14,6 @@ export default function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { isAuthenticated, logout } = useAuthStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
@@ -29,21 +28,6 @@ export default function Header() {
   ];
 
   const closeMenu = () => setIsMenuOpen(false);
-
-  // Click outside detection
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        closeMenu();
-      }
-    };
-    if (isMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMenuOpen]);
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-background shadow-sm border-b border-outline-variant/10 transition-colors duration-300">
@@ -74,7 +58,7 @@ export default function Header() {
             <div className="hidden md:flex items-center">
               <button 
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-surface-container-high border border-outline-variant/10 text-foreground/70 hover:text-foreground transition-all active:scale-90 flex items-center justify-center"
+                className="p-2.5 rounded-xl bg-white/10 border border-white/10 text-foreground/70 hover:text-foreground transition-all active:scale-90 flex items-center justify-center"
                 title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
               >
                 <span className="material-symbols-outlined text-sm">
@@ -99,11 +83,8 @@ export default function Header() {
 
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
-          <div 
-            ref={menuRef}
-            className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-background border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col"
-          >
-            <div className="px-6 py-4 space-y-4 border-b border-outline-variant/10">
+          <div className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-background border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col">
+            <div className="px-6 py-4 space-y-4 border-b border-gray-100 dark:border-gray-800">
               {navLinks.map((link) => (
                 <Link 
                   key={link.href}
@@ -118,12 +99,12 @@ export default function Header() {
               ))}
             </div>
 
-            <div className="px-6 py-6 space-y-6 border-b border-outline-variant/10">
+            <div className="px-6 py-6 space-y-6 border-b border-gray-100 dark:border-gray-800">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary opacity-50">{t("settings.theme")}</span>
                 <button 
                   onClick={() => { toggleTheme(); closeMenu(); }}
-                  className="p-2 rounded-lg bg-surface-container-low border border-outline-variant/10 text-foreground/70"
+                  className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/70"
                 >
                   <span className="material-symbols-outlined text-sm">
                     {theme === 'dark' ? 'light_mode' : 'dark_mode'}
@@ -141,7 +122,7 @@ export default function Header() {
                       className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                         language === lang 
                           ? "bg-primary text-on-primary shadow-sm" 
-                          : "text-foreground border-outline-variant/20"
+                          : "text-on-surface-variant border border-gray-200 dark:border-gray-700"
                       }`}
                     >
                       {lang}
