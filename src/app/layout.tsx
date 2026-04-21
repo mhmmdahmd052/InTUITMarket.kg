@@ -57,6 +57,11 @@ export default function RootLayout({
       <head>
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" as="style" />
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          document.fonts.ready.then(() => {
+            document.documentElement.classList.add('fonts-loaded')
+          })
+        ` }} />
       </head>
       <body
         className={`${inter.variable} ${manrope.variable} font-sans min-h-screen flex flex-col antialiased bg-background text-on-surface selection:bg-primary/30 transition-colors duration-300`}

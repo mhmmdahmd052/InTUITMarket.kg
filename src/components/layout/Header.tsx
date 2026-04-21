@@ -60,7 +60,7 @@ export default function Header() {
                 className={`transition-all pb-1 font-heading font-bold tracking-tight text-sm uppercase ${
                   isActive(link.href) 
                     ? "text-primary border-b-2 border-primary" 
-                    : "text-on-surface/70 hover:text-on-surface"
+                    : "text-foreground/70 hover:text-foreground"
                 }`}
               >
                 {link.label}
@@ -74,7 +74,7 @@ export default function Header() {
             <div className="hidden md:flex items-center">
               <button 
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-surface-container-high border border-outline-variant/10 text-on-surface/70 hover:text-on-surface transition-all active:scale-90 flex items-center justify-center"
+                className="p-2.5 rounded-xl bg-surface-container-high border border-outline-variant/10 text-foreground/70 hover:text-foreground transition-all active:scale-90 flex items-center justify-center"
                 title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
               >
                 <span className="material-symbols-outlined text-sm">
@@ -89,7 +89,7 @@ export default function Header() {
           {/* Hamburger Button */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-on-surface/70 hover:text-on-surface transition-colors flex items-center justify-center"
+            className="md:hidden p-2 text-foreground/70 hover:text-foreground transition-colors flex items-center justify-center"
           >
             <span className="material-symbols-outlined text-2xl">
               {isMenuOpen ? 'close' : 'menu'}
@@ -110,7 +110,7 @@ export default function Header() {
                   href={link.href}
                   onClick={closeMenu}
                   className={`block text-sm font-black uppercase tracking-widest ${
-                    isActive(link.href) ? "text-primary" : "text-on-surface/70 hover:text-on-surface"
+                    isActive(link.href) ? "text-primary" : "text-foreground/70 hover:text-foreground"
                   }`}
                 >
                   {link.label}
@@ -141,7 +141,7 @@ export default function Header() {
                       className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                         language === lang 
                           ? "bg-primary text-on-primary shadow-sm" 
-                          : "text-on-surface-variant border border-outline-variant/20"
+                          : "text-foreground border-outline-variant/20"
                       }`}
                     >
                       {lang}
@@ -152,11 +152,11 @@ export default function Header() {
             </div>
 
             <div className="px-6 py-6 space-y-4">
-              <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">
+              <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground/70 hover:text-foreground transition-colors">
                 <span className="material-symbols-outlined text-lg">account_circle</span>
                 {t("header.account")}
               </Link>
-              <Link href="/settings" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">
+              <Link href="/settings" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-foreground/70 hover:text-foreground transition-colors">
                 <span className="material-symbols-outlined text-lg">settings</span>
                 {t("header.settings")}
               </Link>
