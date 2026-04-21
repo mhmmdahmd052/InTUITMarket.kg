@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import HeaderActions from "../HeaderActions";
@@ -14,6 +14,7 @@ export default function Header() {
   const { theme, toggleTheme } = useThemeStore();
   const { isAuthenticated, logout } = useAuthStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
@@ -29,8 +30,23 @@ export default function Header() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  // Click outside detection
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   return (
-    <nav className="fixed top-0 w-full z-50 bg-black shadow-sm border-b border-outline-variant/10 transition-colors duration-300">
+    <nav className="fixed top-0 w-full z-50 bg-background shadow-sm border-b border-outline-variant/10 transition-colors duration-300">
       <div className="relative flex justify-between items-center px-8 h-20 w-full mx-auto max-w-7xl">
         <div className="flex items-center gap-8">
           <Link href="/" onClick={closeMenu} className="hover:opacity-80 transition-opacity">
@@ -44,7 +60,7 @@ export default function Header() {
                 className={`transition-all pb-1 font-heading font-bold tracking-tight text-sm uppercase ${
                   isActive(link.href) 
                     ? "text-primary border-b-2 border-primary" 
-                    : "text-white/70 hover:text-white"
+                    : "text-on-surface/70 hover:text-on-surface"
                 }`}
               >
                 {link.label}
@@ -58,7 +74,7 @@ export default function Header() {
             <div className="hidden md:flex items-center">
               <button 
                 onClick={toggleTheme}
-                className="p-2.5 rounded-xl bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all active:scale-90 flex items-center justify-center"
+                className="p-2.5 rounded-xl bg-surface-container-high border border-outline-variant/10 text-on-surface/70 hover:text-on-surface transition-all active:scale-90 flex items-center justify-center"
                 title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
               >
                 <span className="material-symbols-outlined text-sm">
@@ -73,7 +89,7 @@ export default function Header() {
           {/* Hamburger Button */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-white/70 hover:text-white transition-colors flex items-center justify-center"
+            className="md:hidden p-2 text-on-surface/70 hover:text-on-surface transition-colors flex items-center justify-center"
           >
             <span className="material-symbols-outlined text-2xl">
               {isMenuOpen ? 'close' : 'menu'}
@@ -83,15 +99,18 @@ export default function Header() {
 
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-black border-l border-b border-white/10 shadow-2xl z-50 py-4 flex flex-col">
-            <div className="px-6 py-4 space-y-4 border-b border-gray-100 dark:border-gray-800">
+          <div 
+            ref={menuRef}
+            className="md:hidden absolute top-full right-0 w-64 max-w-[90vw] bg-background border-l border-b border-outline-variant/10 shadow-2xl z-50 py-4 flex flex-col"
+          >
+            <div className="px-6 py-4 space-y-4 border-b border-outline-variant/10">
               {navLinks.map((link) => (
                 <Link 
                   key={link.href}
                   href={link.href}
                   onClick={closeMenu}
                   className={`block text-sm font-black uppercase tracking-widest ${
-                    isActive(link.href) ? "text-primary" : "text-white/70 hover:text-white"
+                    isActive(link.href) ? "text-primary" : "text-on-surface/70 hover:text-on-surface"
                   }`}
                 >
                   {link.label}
@@ -99,12 +118,12 @@ export default function Header() {
               ))}
             </div>
 
-            <div className="px-6 py-6 space-y-6 border-b border-gray-100 dark:border-gray-800">
+            <div className="px-6 py-6 space-y-6 border-b border-outline-variant/10">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-secondary opacity-50">{t("settings.theme")}</span>
                 <button 
                   onClick={() => { toggleTheme(); closeMenu(); }}
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/70"
+                  className="p-2 rounded-lg bg-surface-container-low border border-outline-variant/10 text-on-surface/70"
                 >
                   <span className="material-symbols-outlined text-sm">
                     {theme === 'dark' ? 'light_mode' : 'dark_mode'}
@@ -122,7 +141,7 @@ export default function Header() {
                       className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
                         language === lang 
                           ? "bg-primary text-on-primary shadow-sm" 
-                          : "text-on-surface-variant border border-gray-200 dark:border-gray-700"
+                          : "text-on-surface-variant border border-outline-variant/20"
                       }`}
                     >
                       {lang}
@@ -133,11 +152,11 @@ export default function Header() {
             </div>
 
             <div className="px-6 py-6 space-y-4">
-              <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-white/70 hover:text-white transition-colors">
+              <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">
                 <span className="material-symbols-outlined text-lg">account_circle</span>
                 {t("header.account")}
               </Link>
-              <Link href="/settings" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-white/70 hover:text-white transition-colors">
+              <Link href="/settings" onClick={closeMenu} className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">
                 <span className="material-symbols-outlined text-lg">settings</span>
                 {t("header.settings")}
               </Link>

@@ -160,3 +160,60 @@ export async function sendOrderEmail(order: any, type: string) {
     throw err;
   }
 }
+
+export async function sendDeleteAccountEmail(email: string) {
+  console.log(`[EMAIL] Sending account deletion notice to ${email}`);
+  
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; background: #f6f6f6; padding: 20px; color: #333;">
+      <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        
+        <!-- HEADER -->
+        <div style="background: #000; color: #fff; padding: 30px; text-align: center;">
+          <img 
+            src="https://intuitmarket.store/logo.png" 
+            alt="InTUITMarket Logo" 
+            width="120"
+            style="margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;" 
+          />
+          <h2 style="margin: 0; letter-spacing: 2px;">InTUITMarket</h2>
+        </div>
+
+        <!-- BODY -->
+        <div style="padding: 30px; text-align: center;">
+          <h1 style="color: #000; margin-top: 0;">Account Deleted</h1>
+          <p style="font-size: 1.1rem; line-height: 1.6;">Your account has been permanently deleted.</p>
+          
+          <div style="background: #fff8f8; border: 1px solid #fee2e2; border-radius: 8px; padding: 20px; margin: 30px 0; text-align: left;">
+            <p style="margin: 0; font-size: 0.9rem; color: #991b1b;">
+              <strong>Security Note:</strong> If this was not you, please contact our support team immediately to secure your information.
+            </p>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div style="background: #f0f0f0; padding: 20px; text-align: center; font-size: 11px; color: #888;">
+          <p>© ${new Date().getFullYear()} InTUITMarket. Premium Digital Marketplace.</p>
+          <p>This is an automated notification. Please do not reply directly to this email.</p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const response = await resend.emails.send({
+      from: 'InTUITMarket <orders@intuitmarket.store>',
+      to: email,
+      subject: 'Account Deleted – InTUITMarket',
+      html: htmlContent
+    });
+
+    if (!response || response.error) {
+      console.error("[EMAIL FAILED]", response?.error);
+      throw new Error("Deletion email failed");
+    }
+  } catch (err: any) {
+    console.error("[EMAIL EXCEPTION]", err.message);
+    throw err;
+  }
+}

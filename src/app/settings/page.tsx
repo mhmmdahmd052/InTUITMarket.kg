@@ -239,6 +239,37 @@ export default function SettingsPage() {
                   {t("settings.saveProfile")}
                 </button>
               </form>
+              
+              <div className="mt-10 pt-8 border-t border-outline-variant/10">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-error mb-1">Danger Zone</h3>
+                    <p className="text-xs text-secondary font-medium">Permanently delete your account and all associated data</p>
+                  </div>
+                  <button 
+                    onClick={async () => {
+                      if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+                        try {
+                          const res = await fetch('/api/delete-account', { method: 'POST' });
+                          const data = await res.json();
+                          if (data.success) {
+                            toast.success("Account deleted successfully");
+                            logout();
+                            router.push("/");
+                          } else {
+                            toast.error(data.error || "Failed to delete account");
+                          }
+                        } catch (err) {
+                          toast.error("An error occurred during deletion");
+                        }
+                      }
+                    }} 
+                    className="px-6 py-3 bg-error/5 text-error border border-error/20 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-error hover:text-on-error transition-all active:scale-95 whitespace-nowrap"
+                  >
+                    Delete Account
+                  </button>
+                </div>
+              </div>
             </section>
 
             {/* NEW THEME SELECTOR SECTION */}
