@@ -254,7 +254,11 @@ export default function SettingsPage() {
                             method: 'POST'
                           });
                           const data = await res.json();
-                          if (!res.ok) throw new Error(data.error || 'Delete failed');
+                          if (!res.ok) {
+                            console.error(data);
+                            alert(data.error + ' - ' + JSON.stringify(data.details || data.message));
+                            return;
+                          }
                           
                           toast.success(t("settings.deleteSuccess") || "Account deleted successfully");
                           await supabase.auth.signOut();

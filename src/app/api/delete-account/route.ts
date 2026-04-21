@@ -1,10 +1,10 @@
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
-import { getSupabaseAdmin } from '@/lib/supabaseAdmin'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 export async function POST() {
-  console.log("[API] delete-account HIT")
   try {
+    console.log('🔥 DELETE API HIT')
     const cookieStore = await cookies()
     
     const supabase = createServerClient(
@@ -18,39 +18,53 @@ export async function POST() {
           set(name, value, options) {
             try {
               cookieStore.set({ name, value, ...options })
-            } catch (error) {
-              // Ignore error in Route Handlers
-            }
+            } catch (error) {}
           },
           remove(name, options) {
             try {
               cookieStore.set({ name, value: '', ...options })
-            } catch (error) {
-              // Ignore error in Route Handlers
-            }
+            } catch (error) {}
           },
         },
       }
     )
 
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const { data, error } = await supabase.auth.getUser()
+    console.log('[AUTH RESULT]', data, error)
 
-    if (error || !user) {
-      console.log("[AUTH] unauthorized:", error)
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    if (error || !data?.user) {
+      return new Response(
+        JSON.stringify({ error: 'AUTH_FAILED', details: error }),
+        { status: 401 }
+      )
     }
 
-    console.log("[AUTH] user_id:", user.id)
-    console.log("[DB] deleting user...")
-    
-    const supabaseAdmin = getSupabaseAdmin()
-    await supabaseAdmin.auth.admin.deleteUser(user.id)
-    
-    console.log("[DB] user deleted")
+    const userId = data.user.id
+    console.log('[DELETE] user_id:', userId)
 
+    const result = await supabaseAdmin.auth.admin.deleteUser(userId)
+    console.log('[SUPABASE RESPONSE]', result)
+
+    if (result.error) {
+      return new Response(
+        JSON.stringify({
+          error: 'DELETE_FAILED',
+          details: result.error
+        }),
+        { status: 500 }
+      )
+    }
+
+    console.log('✅ USER DELETED')
     return Response.json({ success: true })
   } catch (err: any) {
-    console.error('[API] unexpected error:', err)
-    return Response.json({ error: 'Deletion failed' }, { status: 500 })
+    console.error('❌ FATAL:', err)
+    return new Response(
+      JSON.stringify({
+        error: 'FATAL',
+        message: err.message
+      }),
+      { status: 500 }
+    )
   }
 }
