@@ -47,6 +47,7 @@
     "registerSuccess": "تم إنشاء الحساب بنجاح!",
     "registerFailed": "فشل إنشاء الحساب",
     "fillAllFields": "يرجى ملء جميع الحقول. يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
+    "signUp": "سجل الآن",
     "resetPasswordTitle": "إعادة تعيين كلمة المرور",
     "resetPasswordDesc": "أدخل كلمة المرور الجديدة الآمنة لـ {email}.",
     "newPassword": "كلمة المرور الجديدة",
