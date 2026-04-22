@@ -1,12 +1,16 @@
-import { createServerClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 export async function POST() {
   try {
-    console.log('🔥 DELETE API HIT')
+    console.log('🔥 [API] delete-account HIT')
     const cookieStore = await cookies()
     
+    // Debug: log available cookies (names only)
+    const cookieNames = cookieStore.getAll().map(c => c.name)
+    console.log('[DEBUG] request cookies:', cookieNames)
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -29,18 +33,23 @@ export async function POST() {
       }
     )
 
-    const { data, error } = await supabase.auth.getUser()
-    console.log('[AUTH RESULT]', data, error)
+    console.log('[DEBUG] getting user...')
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    console.log('[AUTH RESULT] user_id:', user?.id, 'error:', authError)
 
-    if (error || !data?.user) {
+    if (authError || !user) {
       return new Response(
-        JSON.stringify({ error: 'AUTH_FAILED', details: error }),
+        JSON.stringify({ 
+          error: 'AUTH_FAILED', 
+          details: authError,
+          cookies_found: cookieNames.length > 0
+        }),
         { status: 401 }
       )
     }
 
-    const userId = data.user.id
-    console.log('[DELETE] user_id:', userId)
+    const userId = user.id
+    console.log('[DELETE] target user_id:', userId)
 
     const result = await supabaseAdmin.auth.admin.deleteUser(userId)
     console.log('[SUPABASE RESPONSE]', result)
@@ -55,10 +64,10 @@ export async function POST() {
       )
     }
 
-    console.log('✅ USER DELETED')
+    console.log('✅ USER DELETED SUCCESSFULLY')
     return Response.json({ success: true })
   } catch (err: any) {
-    console.error('❌ FATAL:', err)
+    console.error('❌ FATAL API ERROR:', err)
     return new Response(
       JSON.stringify({
         error: 'FATAL',
