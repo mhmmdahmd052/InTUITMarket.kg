@@ -251,7 +251,8 @@ export default function SettingsPage() {
                       if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
                         try {
                           const res = await fetch('/api/delete-account', { 
-                            method: 'POST'
+                            method: 'POST',
+                            credentials: 'include'
                           });
                           const data = await res.json();
                           if (!res.ok) {
