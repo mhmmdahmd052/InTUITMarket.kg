@@ -250,9 +250,15 @@ export default function SettingsPage() {
                     onClick={async () => {
                       if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
                         try {
+                          const {
+                            data: { session }
+                          } = await supabase.auth.getSession();
+
                           const res = await fetch('/api/delete-account', { 
                             method: 'POST',
-                            credentials: 'include'
+                            headers: {
+                              'Authorization': `Bearer ${session?.access_token}`,
+                            },
                           });
                           const data = await res.json();
                           if (!res.ok) {

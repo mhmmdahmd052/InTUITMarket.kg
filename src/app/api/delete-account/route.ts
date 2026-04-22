@@ -1,59 +1,52 @@
-import { createServerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 /**
- * FINAL ROOT FIX — Account Deletion API
- * Standardized using official createServerClient with manual cookie handling for reliability.
+ * FIXED: Manual token verification using Authorization Bearer header.
+ * This resolves AuthSessionMissingError by verify session via admin client directly.
  */
-export async function POST() {
+export async function POST(req: Request) {
   try {
-    const cookieStore = await cookies()
+    // 🔴 GET ACCESS TOKEN FROM HEADER
+    const authHeader = req.headers.get('authorization')
 
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
-          },
-          set(name: string, value: string, options: any) {
-            cookieStore.set({ name, value, ...options })
-          },
-          remove(name: string, options: any) {
-            cookieStore.set({ name, value: '', ...options })
-          },
-        },
-      }
-    )
-
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'AUTH_FAILED', details: authError }),
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: 'NO_TOKEN' },
         { status: 401 }
       )
     }
 
+    const token = authHeader.replace('Bearer ', '')
+
+    // 🔴 VERIFY USER USING ADMIN CLIENT
+    const { data: userData, error: userError } =
+      await supabaseAdmin.auth.getUser(token)
+
+    if (userError || !userData?.user) {
+      return NextResponse.json(
+        { error: 'AUTH_FAILED', details: userError },
+        { status: 401 }
+      )
+    }
+
+    const userId = userData.user.id
+
+    // 🔴 DELETE USER
     const { error: deleteError } =
-      await supabaseAdmin.auth.admin.deleteUser(user.id)
+      await supabaseAdmin.auth.admin.deleteUser(userId)
 
     if (deleteError) {
-      return new Response(
-        JSON.stringify({ error: 'DELETE_FAILED', details: deleteError }),
+      return NextResponse.json(
+        { error: 'DELETE_FAILED', details: deleteError },
         { status: 500 }
       )
     }
 
-    return Response.json({ success: true })
+    return NextResponse.json({ success: true })
   } catch (err: any) {
-    return new Response(
-      JSON.stringify({ error: 'FATAL', message: err.message }),
+    return NextResponse.json(
+      { error: 'FATAL', message: err.message },
       { status: 500 }
     )
   }
