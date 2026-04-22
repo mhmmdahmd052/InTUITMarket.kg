@@ -13,3 +13,8 @@ export const supabaseAdmin = createClient(
     }
   }
 )
+
+/**
+ * Backward compatibility for legacy modules
+ */
+export const getSupabaseAdmin = () => supabaseAdmin;
