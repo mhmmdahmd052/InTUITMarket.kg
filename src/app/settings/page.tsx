@@ -285,7 +285,7 @@ export default function SettingsPage() {
                         console.error(err);
                         alert('Failed to delete account');
                       }
-                    } 
+                    }} 
                     className="px-6 py-3 bg-error text-on-error rounded-xl text-xs font-black uppercase tracking-widest hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
                   >
                     {t("settings.deleteButton") || "Delete Account"}
