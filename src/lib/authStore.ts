@@ -126,6 +126,17 @@ export const useAuthStore = create<AuthStore>()((set) => ({
         });
       }
 
+      // SEND WELCOME EMAIL via API
+      try {
+        await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name })
+        })
+      } catch (e) {
+        console.error('[WELCOME_EMAIL_TRIGGER_FAILED]', e)
+      }
+
       return { success: true };
     } catch (err) {
       return { success: false, error: "auth.registerFailed" };
