@@ -251,29 +251,29 @@ export default function SettingsPage() {
                       if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
                         try {
                           const { data } = await supabase.auth.getSession()
-                          const token = data.session?.access_token
+
+                          const token = data?.session?.access_token
 
                           if (!token) {
-                            alert('No session found')
+                            alert("Session expired")
                             return
                           }
 
                           const res = await fetch('/api/delete-account', {
                             method: 'POST',
                             headers: {
-                              Authorization: `Bearer ${token}`,
-                            },
+                              Authorization: `Bearer ${token}`
+                            }
                           })
 
                           const result = await res.json()
 
                           if (!res.ok) {
-                            console.error(result)
-                            alert('Delete failed')
+                            alert(result.error || 'Delete failed')
                             return
                           }
 
-                          // logout + redirect
+                          // SUCCESS FLOW
                           await supabase.auth.signOut()
                           window.location.href = '/'
                         } catch (err) {

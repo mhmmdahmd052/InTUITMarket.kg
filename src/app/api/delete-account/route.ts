@@ -1,47 +1,56 @@
-import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 /**
- * FINAL HARD FIX: Token-based authentication ONLY.
- * Explicitly avoids cookies and auth-helpers to resolve session parsing issues.
+ * FINAL HARD FIX: Token-based authentication + Service Role Delete.
+ * Resolves session parsing errors and ensures data cleanup.
  */
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get('authorization')
 
-    if (!authHeader) {
-      return NextResponse.json({ error: 'NO_TOKEN' }, { status: 401 })
-    }
-
-    const token = authHeader.replace('Bearer ', '')
-
-    // Verify user using the administrative client + the raw JWT token
-    const { data, error } = await supabaseAdmin.auth.getUser(token)
-
-    if (error || !data?.user) {
-      return NextResponse.json(
-        { error: 'AUTH_FAILED', details: error },
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'NO_TOKEN' }),
         { status: 401 }
       )
     }
 
-    const userId = data.user.id
+    const token = authHeader.split(' ')[1]
 
-    // Administrative user deletion bypassing RLS
+    // Verify user using token via the administrative client
+    const {
+      data: { user },
+      error: userError
+    } = await supabaseAdmin.auth.getUser(token)
+
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'INVALID_TOKEN', details: userError }),
+        { status: 401 }
+      )
+    }
+
+    const userId = user.id
+
+    // Cleanup related data to avoid foreign key constraints (e.g., orders)
+    await supabaseAdmin.from('orders').delete().eq('user_id', userId)
+
+    // Administrative user deletion
     const { error: deleteError } =
       await supabaseAdmin.auth.admin.deleteUser(userId)
 
     if (deleteError) {
-      return NextResponse.json(
-        { error: 'DELETE_FAILED', details: deleteError },
+      return new Response(
+        JSON.stringify({ error: 'DELETE_FAILED', details: deleteError }),
         { status: 500 }
       )
     }
 
-    return NextResponse.json({ success: true })
+    return Response.json({ success: true })
+
   } catch (err: any) {
-    return NextResponse.json(
-      { error: 'FATAL', message: err.message },
+    return new Response(
+      JSON.stringify({ error: 'FATAL', message: err.message }),
       { status: 500 }
     )
   }
