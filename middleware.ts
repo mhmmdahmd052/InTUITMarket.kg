@@ -10,9 +10,10 @@ export function middleware(req: NextRequest) {
     pathname.startsWith('/api') ||
     pathname === '/favicon.ico' ||
     pathname === '/site.webmanifest' ||
+    pathname.endsWith('.webmanifest') ||
     pathname.startsWith('/icons') ||
     pathname.startsWith('/images') ||
-    pathname.match(/\.(png|jpg|jpeg|svg|webp|ico|webmanifest)$/)
+    pathname.match(/\.(png|jpg|jpeg|svg|webp|ico)$/)
   ) {
     return NextResponse.next()
   }

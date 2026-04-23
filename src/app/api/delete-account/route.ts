@@ -2,8 +2,12 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { sendDeleteAccountEmail } from '@/lib/email'
 
 /**
- * FINAL FIX: Email order + Token Auth + Service Role Delete.
- * Sends confirmation email BEFORE deleting user record to ensure email availability.
+ * FINAL CRITICAL FIX: Email order + Token Auth + Service Role Delete.
+ * IMPLEMENTS STRICT ORDER:
+ * 1) GET USER FROM TOKEN
+ * 2) EXTRACT EMAIL
+ * 3) SEND EMAIL
+ * 4) DELETE USER
  */
 export async function POST(req: Request) {
   try {
@@ -18,7 +22,7 @@ export async function POST(req: Request) {
 
     const token = authHeader.split(' ')[1]
 
-    // Verify user using token via the administrative client
+    // 1) Verify user using token via the administrative client
     const {
       data: { user },
       error: userError
@@ -31,13 +35,14 @@ export async function POST(req: Request) {
       )
     }
 
+    // 2) Extract Email
     const userId = user.id
     const userEmail = user.email
 
     // Cleanup related data to avoid foreign key constraints (e.g., orders)
     await supabaseAdmin.from('orders').delete().eq('user_id', userId)
 
-    // 🔴 SEND EMAIL FIRST (while user record exists)
+    // 3) SEND EMAIL FIRST (while user record exists)
     if (userEmail) {
       try {
         await sendDeleteAccountEmail(userEmail)
@@ -47,7 +52,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 🔴 THEN DELETE USER
+    // 4) THEN DELETE USER
     const { error: deleteError } =
       await supabaseAdmin.auth.admin.deleteUser(userId)
 
