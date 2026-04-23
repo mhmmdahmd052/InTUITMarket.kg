@@ -248,34 +248,39 @@ export default function SettingsPage() {
                   </div>
                   <button 
                     onClick={async () => {
-                      if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
-                        try {
-                          const { data } = await supabase.auth.getSession()
+                      const confirmed = confirm(
+                        "Are you sure you want to permanently delete your account?\n\nThis action cannot be undone."
+                      )
+                      
+                      if (!confirmed) return
 
-                          const token = data?.session?.access_token
+                      try {
+                        const { data } = await supabase.auth.getSession()
 
-                          if (!token) {
-                            alert("Session expired")
-                            return
+                        const token = data?.session?.access_token
+
+                        if (!token) {
+                          alert("Session expired")
+                          return
+                        }
+
+                        const res = await fetch('/api/delete-account', {
+                          method: 'POST',
+                          headers: {
+                            Authorization: `Bearer ${token}`
                           }
+                        })
 
-                          const res = await fetch('/api/delete-account', {
-                            method: 'POST',
-                            headers: {
-                              Authorization: `Bearer ${token}`
-                            }
-                          })
+                        const result = await res.json()
 
-                          const result = await res.json()
+                        if (!res.ok) {
+                          alert(result.error || 'Delete failed')
+                          return
+                        }
 
-                          if (!res.ok) {
-                            alert(result.error || 'Delete failed')
-                            return
-                          }
-
-                          // SUCCESS FLOW
-                          await supabase.auth.signOut()
-                          window.location.href = '/'
+                        // SUCCESS FLOW
+                        await supabase.auth.signOut()
+                        window.location.href = 'https://intuitmarket.store'
                         } catch (err) {
                           console.error(err);
                           alert('Failed to delete account');

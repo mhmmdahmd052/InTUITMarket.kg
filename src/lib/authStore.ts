@@ -101,7 +101,8 @@ export const useAuthStore = create<AuthStore>()((set) => ({
         email,
         password: password || '',
         options: {
-          data: { name }
+          data: { name },
+          emailRedirectTo: 'https://intuitmarket.store'
         }
       });
 
@@ -135,7 +136,7 @@ export const useAuthStore = create<AuthStore>()((set) => ({
     await supabase.auth.signOut();
     set({ isAuthenticated: false, user: null });
     if (typeof window !== 'undefined') {
-      window.location.href = '/';
+      window.location.href = 'https://intuitmarket.store';
     }
   },
 

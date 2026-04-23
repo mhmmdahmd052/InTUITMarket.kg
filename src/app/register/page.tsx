@@ -44,7 +44,8 @@ function RegisterContent() {
     const res = await register({ name, email, password });
     if (res.success) {
       toast.success(t("auth.registerSuccess"));
-      router.replace(redirectTarget);
+      const target = redirectTarget === "/" ? "https://intuitmarket.store" : redirectTarget;
+      router.replace(target);
     } else {
       toast.error("Registration failed. Please check your details and try again.");
     }

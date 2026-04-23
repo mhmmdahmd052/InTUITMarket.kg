@@ -8,11 +8,11 @@ export function middleware(req: NextRequest) {
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/site.webmanifest') ||
+    pathname === '/favicon.ico' ||
+    pathname === '/site.webmanifest' ||
     pathname.startsWith('/icons') ||
     pathname.startsWith('/images') ||
-    pathname.match(/\.(png|jpg|jpeg|svg|webp|ico)$/)
+    pathname.match(/\.(png|jpg|jpeg|svg|webp|ico|webmanifest)$/)
   ) {
     return NextResponse.next()
   }

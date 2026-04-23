@@ -47,7 +47,8 @@ function LoginContent() {
       const res = await login(email, password);
       if (res.success) {
         toast.success(t("auth.loginSuccess"));
-        router.replace(redirectTarget === "null" ? "/" : redirectTarget);
+        const target = redirectTarget === "null" || redirectTarget === "/" ? "https://intuitmarket.store" : redirectTarget;
+        router.replace(target);
       } else {
         toast.error("Invalid email or password");
       }
@@ -56,6 +57,7 @@ function LoginContent() {
         email: email,
         options: {
           shouldCreateUser: false,
+          emailRedirectTo: 'https://intuitmarket.store'
         },
       });
       if (error) {
