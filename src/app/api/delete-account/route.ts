@@ -2,37 +2,32 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 /**
- * FIXED: Manual token verification using Authorization Bearer header.
- * This resolves AuthSessionMissingError by verify session via admin client directly.
+ * FINAL HARD FIX: Token-based authentication ONLY.
+ * Explicitly avoids cookies and auth-helpers to resolve session parsing issues.
  */
 export async function POST(req: Request) {
   try {
-    // 🔴 GET ACCESS TOKEN FROM HEADER
     const authHeader = req.headers.get('authorization')
 
     if (!authHeader) {
-      return NextResponse.json(
-        { error: 'NO_TOKEN' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'NO_TOKEN' }, { status: 401 })
     }
 
     const token = authHeader.replace('Bearer ', '')
 
-    // 🔴 VERIFY USER USING ADMIN CLIENT
-    const { data: userData, error: userError } =
-      await supabaseAdmin.auth.getUser(token)
+    // Verify user using the administrative client + the raw JWT token
+    const { data, error } = await supabaseAdmin.auth.getUser(token)
 
-    if (userError || !userData?.user) {
+    if (error || !data?.user) {
       return NextResponse.json(
-        { error: 'AUTH_FAILED', details: userError },
+        { error: 'AUTH_FAILED', details: error },
         { status: 401 }
       )
     }
 
-    const userId = userData.user.id
+    const userId = data.user.id
 
-    // 🔴 DELETE USER
+    // Administrative user deletion bypassing RLS
     const { error: deleteError } =
       await supabaseAdmin.auth.admin.deleteUser(userId)
 

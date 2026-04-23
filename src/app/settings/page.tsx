@@ -250,26 +250,32 @@ export default function SettingsPage() {
                     onClick={async () => {
                       if (confirm(t("settings.deleteConfirm") || "Are you sure you want to delete your account? This action cannot be undone.")) {
                         try {
-                          const {
-                            data: { session }
-                          } = await supabase.auth.getSession();
+                          const { data } = await supabase.auth.getSession()
+                          const token = data.session?.access_token
 
-                          const res = await fetch('/api/delete-account', { 
+                          if (!token) {
+                            alert('No session found')
+                            return
+                          }
+
+                          const res = await fetch('/api/delete-account', {
                             method: 'POST',
                             headers: {
-                              'Authorization': `Bearer ${session?.access_token}`,
+                              Authorization: `Bearer ${token}`,
                             },
-                          });
-                          const data = await res.json();
+                          })
+
+                          const result = await res.json()
+
                           if (!res.ok) {
-                            console.error(data);
-                            alert(data.error + ' - ' + JSON.stringify(data.details || data.message));
-                            return;
+                            console.error(result)
+                            alert('Delete failed')
+                            return
                           }
-                          
-                          toast.success(t("settings.deleteSuccess") || "Account deleted successfully");
-                          await supabase.auth.signOut();
-                          window.location.href = "/";
+
+                          // logout + redirect
+                          await supabase.auth.signOut()
+                          window.location.href = '/'
                         } catch (err) {
                           console.error(err);
                           alert('Failed to delete account');
