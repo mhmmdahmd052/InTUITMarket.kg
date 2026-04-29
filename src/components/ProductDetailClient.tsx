@@ -66,13 +66,7 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
                 <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">ID: {project.slug?.current || project._id?.slice(-8)}</span>
               </div>
               <h1 className="text-3xl font-bold mb-4">{name}</h1>
-              <div className="mt-4 text-sm leading-relaxed space-y-2 text-gray-600 dark:text-gray-400">
-                <p>{cleaned}</p>
-                <p><strong>{t("materialType")}:</strong> Structural</p>
-                <p><strong>{t("standardCompliance")}:</strong> GOST Certified Standards</p>
-                <p><strong>{t("primaryUsage")}:</strong> {specs.usage}</p>
-                <p><strong>{t("dimensions")}:</strong> {specs.dimensions}</p>
-              </div>
+              <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">{cleaned}</p>
               
               <div className="flex items-end gap-3 mb-10 p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700">
                 <span className="text-4xl font-black text-blue-600 dark:text-blue-400">
@@ -103,24 +97,25 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
             </header>
 
             <div className="mt-auto pt-10 border-t border-gray-100 dark:border-gray-800">
-              <h2 className="text-xl font-semibold mb-6">{t("catalog.technicalProfile")}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-                <div className="space-y-4">
-                  <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("catalog.materialType")}</span>
-                    <span className="font-bold">{t("catalog.structural")}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("catalog.standardCompliance")}</span>
-                    <span className="font-bold">{t("catalog.gostCertified")}</span>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
-                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("catalog.primaryUsage")}</span>
-                    <span className="font-bold">{t("catalog.construction")}</span>
-                  </div>
-                </div>
+              <h2 className="text-xl font-semibold mb-6">{t("catalog.description")}</h2>
+              <div className="space-y-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                <p>{cleaned}</p>
+
+                <p>
+                  <strong>{t("materialType")}:</strong> Structural
+                </p>
+
+                <p>
+                  <strong>{t("standardCompliance")}:</strong> GOST Certified Standards
+                </p>
+
+                <p>
+                  <strong>{t("primaryUsage")}:</strong> {specs.usage}
+                </p>
+
+                <p>
+                  <strong>{t("dimensions")}:</strong> {specs.dimensions}
+                </p>
               </div>
             </div>
           </div>
