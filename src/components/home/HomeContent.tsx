@@ -117,11 +117,6 @@ export default function HomeContent({ projects }: HomeContentProps) {
                   <h3 className="text-base font-bold mb-4 line-clamp-2 leading-snug text-gray-900 dark:text-gray-100">{name}</h3>
                   <div className="text-sm mb-10">
                     <p className="text-gray-500 dark:text-gray-400 line-clamp-2 mb-2 h-10">{desc}</p>
-                    <div className="text-[10px] text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-2 space-y-0.5">
-                      <p><strong>{t("catalog.materialType")}:</strong> {getProjectSpecs(project, t).materialType}</p>
-                      <p><strong>{t("catalog.primaryUsage")}:</strong> {getProjectSpecs(project, t).usage}</p>
-                      <p><strong>{t("catalog.dimensions")}:</strong> {getProjectSpecs(project, t).dimensions}</p>
-                    </div>
                   </div>
                   <div className="mt-auto grid grid-cols-2 gap-3">
                     <button 

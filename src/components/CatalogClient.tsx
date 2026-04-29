@@ -129,11 +129,6 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
                 </div>
                 <div className="text-sm mb-6">
                   <p className="text-gray-500 dark:text-gray-400 line-clamp-2 mb-2 h-10">{description}</p>
-                <div className="text-[10px] text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-2 space-y-0.5">
-                    <p><strong>{t("catalog.materialType")}:</strong> {getProjectSpecs(project, t).materialType}</p>
-                    <p><strong>{t("catalog.primaryUsage")}:</strong> {getProjectSpecs(project, t).usage}</p>
-                    <p><strong>{t("catalog.dimensions")}:</strong> {getProjectSpecs(project, t).dimensions}</p>
-                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <button 

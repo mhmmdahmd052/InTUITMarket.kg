@@ -67,13 +67,14 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
               </div>
               <h1 className="text-3xl font-bold mb-4">{name}</h1>
               <div className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">
-                <div>
+                <div className="mt-4">
                   <p>{description}</p>
-                  <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 text-sm space-y-1">
-                    <p><strong>{t("catalog.materialType")}:</strong> {specs.materialType}</p>
-                    <p><strong>{t("catalog.standardCompliance")}:</strong> {specs.standardCompliance}</p>
-                    <p><strong>{t("catalog.primaryUsage")}:</strong> {specs.usage}</p>
-                    <p><strong>{t("catalog.dimensions")}:</strong> {specs.dimensions}</p>
+
+                  <div className="mt-4 text-sm space-y-1">
+                    <p><strong>{t("catalog.materialType")}</strong>: Structural</p>
+                    <p><strong>{t("catalog.standardCompliance")}</strong>: GOST Certified Standards</p>
+                    <p><strong>{t("catalog.primaryUsage")}</strong>: {specs.usage}</p>
+                    <p><strong>{t("catalog.dimensions")}</strong>: {specs.dimensions}</p>
                   </div>
                 </div>
               </div>
