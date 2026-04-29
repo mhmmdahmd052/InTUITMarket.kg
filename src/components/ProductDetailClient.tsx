@@ -97,7 +97,7 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
             </header>
 
             <div className="mt-auto pt-10 border-t border-gray-100 dark:border-gray-800">
-              <h2 className="text-xl font-semibold mb-6">{t("catalog.description")}</h2>
+              <h2 className="text-xl font-semibold mb-6">{t("description")}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
                 <div className="space-y-4">
                   <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
