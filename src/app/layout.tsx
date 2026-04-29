@@ -21,13 +21,9 @@ export const metadata: Metadata = {
   title: "InTUITMarket",
   description: "Premium digital marketplace",
   icons: {
-    icon: [
-      { url: "/favicon-32x32.png?v=10", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png?v=10", sizes: "16x16", type: "image/png" }
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png?v=10", sizes: "180x180", type: "image/png" }
-    ]
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   openGraph: {
     title: "InTUITMarket",
@@ -35,7 +31,7 @@ export const metadata: Metadata = {
     url: "https://intuitmarket.store",
     siteName: "InTUITMarket",
     images: [{ 
-      url: 'https://intuitmarket.store/og-image.png?v=10', 
+      url: 'https://intuitmarket.store/og-image.png?v=2', 
       width: 1200, 
       height: 630 
     }],
@@ -46,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "InTUITMarket",
     description: "Premium digital marketplace",
-    images: ['https://intuitmarket.store/og-image.png?v=10'],
+    images: ['https://intuitmarket.store/og-image.png?v=2'],
   },
   manifest: '/site.webmanifest',
 };
@@ -60,9 +56,6 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-        <link rel="icon" href="/favicon-32x32.png?v=10" />
-        <link rel="icon" sizes="16x16" href="/favicon-16x16.png?v=10" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=10" />
       </head>
       <body
         className={`${inter.variable} ${manrope.variable} font-sans min-h-screen flex flex-col antialiased bg-background text-foreground selection:bg-primary/30 transition-colors duration-300`}

@@ -25,9 +25,8 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
   const name = getLocalized(project, 'name', language);
   const rawDescription = getLocalized(project, 'description', language);
   const cleaned = cleanDescription(rawDescription);
-  const description = cleaned; // Keep description for backwards compatibility in other places if needed, but 'cleaned' is used in the template.
+  const description = cleaned;
   const imageUrl = project.imageUrl;
-  
   const specs = getProjectSpecs(project, t);
 
   const handleAddToCart = () => {
@@ -67,33 +66,19 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
                 <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">ID: {project.slug?.current || project._id?.slice(-8)}</span>
               </div>
               <h1 className="text-3xl font-bold mb-4">{name}</h1>
-              <div className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">
-                <div className="mt-4 text-sm leading-relaxed space-y-2">
-                  <p>{cleaned}</p>
-
-                  <p>
-                    <strong>{t("materialType")}:</strong> Structural
-                  </p>
-
-                  <p>
-                    <strong>{t("standardCompliance")}:</strong> GOST Certified Standards
-                  </p>
-
-                  <p>
-                    <strong>{t("primaryUsage")}:</strong> {specs.usage}
-                  </p>
-
-                  <p>
-                    <strong>{t("dimensions")}:</strong> {specs.dimensions}
-                  </p>
-                </div>
+              <div className="mt-4 text-sm leading-relaxed space-y-2 text-gray-600 dark:text-gray-400">
+                <p>{cleaned}</p>
+                <p><strong>{t("materialType")}:</strong> Structural</p>
+                <p><strong>{t("standardCompliance")}:</strong> GOST Certified Standards</p>
+                <p><strong>{t("primaryUsage")}:</strong> {specs.usage}</p>
+                <p><strong>{t("dimensions")}:</strong> {specs.dimensions}</p>
               </div>
-
-              <div className="flex items-end gap-3 mb-10 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700">
-                <span className="text-base font-black text-blue-600 dark:text-blue-400">
+              
+              <div className="flex items-end gap-3 mb-10 p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700">
+                <span className="text-4xl font-black text-blue-600 dark:text-blue-400">
                   {project.price ? `${project.price.toLocaleString()}` : "POA"}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400 mb-0.5 font-bold text-xs">{t("cart.currency")}</span>
+                <span className="text-gray-500 dark:text-gray-400 mb-1 font-bold text-sm">{t("cart.currency")}</span>
               </div>
 
               <div className="space-y-4">
@@ -104,8 +89,40 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
                   <span className="material-symbols-outlined text-xs">shopping_cart</span>
                   {t("catalog.addToCart")}
                 </button>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">verified</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{t("catalog.isoQuality")}</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">local_shipping</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{t("catalog.fastShipping")}</span>
+                  </div>
+                </div>
               </div>
             </header>
+
+            <div className="mt-auto pt-10 border-t border-gray-100 dark:border-gray-800">
+              <h2 className="text-xl font-semibold mb-6">{t("catalog.technicalProfile")}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                <div className="space-y-4">
+                  <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("catalog.materialType")}</span>
+                    <span className="font-bold">{t("catalog.structural")}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("catalog.standardCompliance")}</span>
+                    <span className="font-bold">{t("catalog.gostCertified")}</span>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
+                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("catalog.primaryUsage")}</span>
+                    <span className="font-bold">{t("catalog.construction")}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
