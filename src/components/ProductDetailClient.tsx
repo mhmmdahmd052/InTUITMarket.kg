@@ -68,22 +68,30 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
               <h1 className="text-3xl font-bold mb-4">{name}</h1>
               <div className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">
                 <div className="mt-4">
-                  <p>{description}</p>
+                  <p className="leading-relaxed">{description}</p>
 
-                  <div className="mt-4 text-sm space-y-1">
-                    <p><strong>{t("catalog.materialType")}</strong>: Structural</p>
-                    <p><strong>{t("catalog.standardCompliance")}</strong>: GOST Certified Standards</p>
-                    <p><strong>{t("catalog.primaryUsage")}</strong>: {specs.usage}</p>
-                    <p><strong>{t("catalog.dimensions")}</strong>: {specs.dimensions}</p>
+                  <div className="mt-3 text-sm space-y-1 opacity-90">
+                    <p>
+                      <span className="font-medium">{t("materialType")}:</span> Structural
+                    </p>
+                    <p>
+                      <span className="font-medium">{t("standardCompliance")}:</span> GOST Certified Standards
+                    </p>
+                    <p>
+                      <span className="font-medium">{t("primaryUsage")}:</span> {specs.usage}
+                    </p>
+                    <p>
+                      <span className="font-medium">{t("dimensions")}:</span> {specs.dimensions}
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-end gap-3 mb-10 p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700">
-                <span className="text-4xl font-black text-blue-600 dark:text-blue-400">
+              <div className="flex items-end gap-3 mb-10 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700">
+                <span className="text-base font-black text-blue-600 dark:text-blue-400">
                   {project.price ? `${project.price.toLocaleString()}` : "POA"}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400 mb-1 font-bold text-sm">{t("cart.currency")}</span>
+                <span className="text-gray-500 dark:text-gray-400 mb-0.5 font-bold text-xs">{t("cart.currency")}</span>
               </div>
 
               <div className="space-y-4">

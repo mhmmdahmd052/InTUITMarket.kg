@@ -1,4 +1,8 @@
 {
+  "materialType": "Material Type",
+  "standardCompliance": "Standard Compliance",
+  "primaryUsage": "Primary Usage",
+  "dimensions": "Dimensions",
   "header": {
     "home": "Home",
     "catalog": "Catalog",
@@ -143,8 +147,8 @@
     "order": "Order",
     "professionalGrade": "Professional Grade",
     "materialType": "Material Type",
-    "primaryUsage": "Primary Usage",
     "standardCompliance": "Standard Compliance",
+    "primaryUsage": "Primary Usage",
     "dimensions": "Dimensions",
     "logisticsHeader": "Logistics & Delivery",
     "nextDayDelivery": "Next Day Delivery",

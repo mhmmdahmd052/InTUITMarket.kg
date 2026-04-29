@@ -1,4 +1,8 @@
 {
+  "materialType": "نوع المادة",
+  "standardCompliance": "المواصفات القياسية",
+  "primaryUsage": "الاستخدام الأساسي",
+  "dimensions": "الأبعاد",
   "header": {
     "home": "الرئيسية",
     "catalog": "الكتالوج",

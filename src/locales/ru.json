@@ -1,4 +1,8 @@
 {
+  "materialType": "Тип материала",
+  "standardCompliance": "Стандарты",
+  "primaryUsage": "Основное использование",
+  "dimensions": "Размеры",
   "header": {
     "home": "Главная",
     "catalog": "Каталог",
