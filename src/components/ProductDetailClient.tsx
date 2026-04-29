@@ -68,30 +68,31 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
               <h1 className="text-3xl font-bold mb-4">{name}</h1>
               <p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">{cleaned}</p>
               
-              <div className="flex items-end gap-3 mb-10 p-6 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700">
-                <span className="text-4xl font-black text-blue-600 dark:text-blue-400">
-                  {project.price ? `${project.price.toLocaleString()}` : "POA"}
-                </span>
-                <span className="text-gray-500 dark:text-gray-400 mb-1 font-bold text-sm">{t("cart.currency")}</span>
-              </div>
-
-              <div className="space-y-4">
+              <div className="flex items-center gap-3 mb-10">
+                <div className="px-4 py-2 text-base w-auto inline-flex items-center bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 gap-2">
+                  <span className="font-black text-blue-600 dark:text-blue-400">
+                    {project.price ? `${project.price.toLocaleString()}` : "POA"}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400 font-bold text-xs">{t("cart.currency")}</span>
+                </div>
+                
                 <button 
                   onClick={handleAddToCart}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-xl shadow-blue-600/20 active:scale-95 translate-y-0 hover:-translate-y-1 text-xs"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-2xl flex items-center justify-center gap-4 transition-all shadow-xl shadow-blue-600/20 active:scale-95 text-xs"
                 >
                   <span className="material-symbols-outlined text-xs">shopping_cart</span>
                   {t("catalog.addToCart")}
                 </button>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">verified</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{t("catalog.isoQuality")}</span>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                    <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">local_shipping</span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{t("catalog.fastShipping")}</span>
-                  </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-10">
+                <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+                  <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">verified</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{t("catalog.isoQuality")}</span>
+                </div>
+                <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+                  <span className="material-symbols-outlined text-blue-600 dark:text-blue-400">local_shipping</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">{t("catalog.fastShipping")}</span>
                 </div>
               </div>
             </header>
@@ -102,11 +103,11 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
                 <div className="space-y-4">
                   <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
                     <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("materialType")}</span>
-                    <span className="font-bold text-gray-900 dark:text-gray-100">Structural</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-100">{t("catalog.structural")}</span>
                   </div>
                   <div className="flex justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
                     <span className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">{t("standardCompliance")}</span>
-                    <span className="font-bold text-gray-900 dark:text-gray-100">GOST Certified Standards</span>
+                    <span className="font-bold text-gray-900 dark:text-gray-100">{t("catalog.gostCertified")}</span>
                   </div>
                 </div>
                 <div className="space-y-4">

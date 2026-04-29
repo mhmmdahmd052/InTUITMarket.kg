@@ -5,6 +5,7 @@ import { getLocalized } from "@/lib/utils";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/lib/store";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 interface HomeContentProps {
@@ -13,6 +14,7 @@ interface HomeContentProps {
 
 export default function HomeContent({ projects }: HomeContentProps) {
   const { t, language } = useTranslation();
+  const router = useRouter();
   const { addToCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
 
@@ -91,7 +93,11 @@ export default function HomeContent({ projects }: HomeContentProps) {
             const desc = getLocalized(project, 'description', language);
             
             return (
-              <div key={project._id} className="group flex flex-col bg-gray-50 dark:bg-gray-800/50 rounded-[40px] border border-gray-100 dark:border-gray-700/50 p-6 transition-all duration-700 hover:shadow-2xl hover:shadow-blue-600/5 hover:-translate-y-2">
+              <div 
+                key={project._id} 
+                onClick={() => router.push(`/products/${project._id}`)}
+                className="group flex flex-col bg-gray-50 dark:bg-gray-800/50 rounded-[40px] border border-gray-100 dark:border-gray-700/50 p-6 transition-all duration-700 hover:shadow-2xl hover:shadow-blue-600/5 hover:-translate-y-2 cursor-pointer"
+              >
                 <div className="relative aspect-[4/5] rounded-[32px] overflow-hidden mb-8 bg-white dark:bg-gray-900 shadow-inner">
                   <img 
                     src={project.imageUrl} 
@@ -111,7 +117,8 @@ export default function HomeContent({ projects }: HomeContentProps) {
                   <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 line-clamp-2 leading-relaxed h-10">{desc}</p>
                                      <div className="mt-auto grid grid-cols-2 gap-3">
                       <button 
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           addToCart({
                             _id: project._id,
                             name: name,
@@ -128,6 +135,7 @@ export default function HomeContent({ projects }: HomeContentProps) {
                       </button>
                       <Link 
                         href={`/products/${project._id}`}
+                        onClick={(e) => e.stopPropagation()}
                         className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-bold uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100 transition-all border border-transparent px-3 py-1.5 flex items-center justify-center gap-2 leading-none"
                       >
                         {t("catalog.details")}

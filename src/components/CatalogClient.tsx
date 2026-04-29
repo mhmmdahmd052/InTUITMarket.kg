@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/lib/i18n';
+import { useRouter } from 'next/navigation';
 import { getLocalized } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import toast from 'react-hot-toast';
@@ -14,6 +15,7 @@ interface CatalogClientProps {
 
 export default function CatalogClient({ initialProjects, initialQuery = "" }: CatalogClientProps) {
   const { t, language } = useTranslation();
+  const router = useRouter();
   const { addToCart } = useCartStore();
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -108,7 +110,11 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
           const imgUrl = project.imageUrl;
 
           return (
-            <div key={project._id} className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-500">
+            <div 
+              key={project._id} 
+              onClick={() => router.push(`/products/${project._id}`)}
+              className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-500 cursor-pointer"
+            >
               <div className="aspect-square bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
                 <img src={imgUrl} alt={name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               </div>
@@ -122,7 +128,8 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-6 h-10">{getLocalized(project, 'description', language)}</p>
                 <div className="grid grid-cols-2 gap-3">
                   <button 
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       addToCart({
                         _id: project._id,
                         name: name,
@@ -137,7 +144,11 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
                   >
                     <span className="material-symbols-outlined text-xs">shopping_cart</span>
                   </button>
-                  <Link href={`/products/${project._id}`} className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-bold uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100 transition-all border border-transparent px-3 py-1.5 flex items-center justify-center gap-2 leading-none">
+                  <Link 
+                    href={`/products/${project._id}`} 
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-bold uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100 transition-all border border-transparent px-3 py-1.5 flex items-center justify-center gap-2 leading-none"
+                  >
                     {t("catalog.details")}
                   </Link>
                 </div>
