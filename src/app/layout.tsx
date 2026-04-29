@@ -21,9 +21,9 @@ export const metadata: Metadata = {
   title: "InTUITMarket",
   description: "Premium digital marketplace",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon-32x32.png?v=2",
+    shortcut: "/favicon-32x32.png?v=2",
+    apple: "/apple-touch-icon.png?v=2",
   },
   openGraph: {
     title: "InTUITMarket",
@@ -56,6 +56,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+        <link rel="icon" href="/favicon-32x32.png?v=2" />
+        <link rel="icon" sizes="16x16" href="/favicon-16x16.png?v=2" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
       </head>
       <body
         className={`${inter.variable} ${manrope.variable} font-sans min-h-screen flex flex-col antialiased bg-background text-foreground selection:bg-primary/30 transition-colors duration-300`}

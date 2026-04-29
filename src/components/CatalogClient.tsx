@@ -2,8 +2,9 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18n';
-import { getLocalized } from '@/lib/utils';
+import { getLocalized, cleanDescription, getProjectSpecs } from '@/lib/utils';
 import { useCartStore } from '@/lib/store';
 import toast from 'react-hot-toast';
 
@@ -14,6 +15,7 @@ interface CatalogClientProps {
 
 export default function CatalogClient({ initialProjects, initialQuery = "" }: CatalogClientProps) {
   const { t, language } = useTranslation();
+  const router = useRouter();
   const { addToCart } = useCartStore();
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -105,10 +107,16 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {filteredProjects.map(project => {
           const name = getLocalized(project, 'name', language);
+          const rawDescription = getLocalized(project, 'description', language);
+          const description = cleanDescription(rawDescription);
           const imgUrl = project.imageUrl;
 
           return (
-            <div key={project._id} className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-500">
+            <div 
+              key={project._id} 
+              onClick={() => router.push(`/products/${project._id}`)}
+              className="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-500 cursor-pointer"
+            >
               <div className="aspect-square bg-gray-100 dark:bg-gray-900 relative overflow-hidden">
                 <img src={imgUrl} alt={name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               </div>
@@ -119,17 +127,25 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
                     {project.price ? `${project.price.toLocaleString()}` : "POA"} {t("cart.currency")}
                   </span>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-6 h-10">{getLocalized(project, 'description', language)}</p>
+                <div className="text-sm mb-6">
+                  <p className="text-gray-500 dark:text-gray-400 line-clamp-2 mb-2 h-10">{description}</p>
+                <div className="text-[10px] text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-2 space-y-0.5">
+                    <p><strong>{t("catalog.materialType")}:</strong> {getProjectSpecs(project, t).materialType}</p>
+                    <p><strong>{t("catalog.primaryUsage")}:</strong> {getProjectSpecs(project, t).usage}</p>
+                    <p><strong>{t("catalog.dimensions")}:</strong> {getProjectSpecs(project, t).dimensions}</p>
+                  </div>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <button 
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       addToCart({
                         _id: project._id,
                         name: name,
                         price: project.price || 0,
                         imageUrl: imgUrl,
                         quantity: 1,
-                        description: getLocalized(project, 'description', language)
+                        description: description
                       });
                       toast.success(t("catalog.addedToCart"));
                     }}
@@ -137,7 +153,11 @@ export default function CatalogClient({ initialProjects, initialQuery = "" }: Ca
                   >
                     <span className="material-symbols-outlined text-xs">shopping_cart</span>
                   </button>
-                  <Link href={`/products/${project._id}`} className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-bold uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100 transition-all border border-transparent px-3 py-1.5 flex items-center justify-center gap-2 leading-none">
+                  <Link 
+                    href={`/products/${project._id}`} 
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl font-bold uppercase tracking-widest text-xs text-gray-900 dark:text-gray-100 transition-all border border-transparent px-3 py-1.5 flex items-center justify-center gap-2 leading-none"
+                  >
                     {t("catalog.details")}
                   </Link>
                 </div>

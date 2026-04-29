@@ -145,6 +145,7 @@
     "materialType": "نوع المادة",
     "primaryUsage": "الاستخدام الأساسي",
     "standardCompliance": "الامتثال للمعايير",
+    "dimensions": "الأبعاد",
     "logisticsHeader": "اللوجستيات والتوصيل",
     "nextDayDelivery": "التوصيل في اليوم التالي",
     "nextDayDesc": "متاح للطلبات المقدمة قبل الساعة 14:00 في بشكيك.",
@@ -168,7 +169,12 @@
     "secureTransaction": "معاملة آمنة",
     "fastShipping": "شحن سريع",
     "technicalProfile": "الوصف",
-    "deliveryRateNote": "* يتم حساب أسعار التوصيل أثناء الدفع بناءً على الوزن والمسافة الدقيقة لموقع البناء."
+    "deliveryRateNote": "* يتم حساب أسعار التوصيل أثناء الدفع بناءً على الوزن والمسافة الدقيقة لموقع البناء.",
+    "structuralConstruction": "الإنشاءات الهيكلية",
+    "fluidTransport": "أنظمة نقل السوائل",
+    "foundationWork": "أعمال البناء والأساسات",
+    "insulationWork": "العزل الحراري والصوتي",
+    "generalConstruction": "استخدامات البناء العامة"
   },
   "settings": {
     "accountSettings": "إعدادات الحساب",

@@ -145,6 +145,7 @@
     "materialType": "Material Type",
     "primaryUsage": "Primary Usage",
     "standardCompliance": "Standard Compliance",
+    "dimensions": "Dimensions",
     "logisticsHeader": "Logistics & Delivery",
     "nextDayDelivery": "Next Day Delivery",
     "nextDayDesc": "Available for orders placed before 14:00 in Bishkek.",
@@ -168,7 +169,12 @@
     "secureTransaction": "Secure Transaction",
     "fastShipping": "Fast Shipping",
     "technicalProfile": "Description",
-    "deliveryRateNote": "* Delivery rates are calculated during checkout based on weight and precise construction site distance."
+    "deliveryRateNote": "* Delivery rates are calculated during checkout based on weight and precise construction site distance.",
+    "structuralConstruction": "Structural Construction",
+    "fluidTransport": "Fluid Transport Systems",
+    "foundationWork": "Building & Foundation Work",
+    "insulationWork": "Thermal & Acoustic Insulation",
+    "generalConstruction": "General Construction Use"
   },
   "settings": {
     "accountSettings": "Account Settings",

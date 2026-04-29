@@ -9,7 +9,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendWelcomeEmail(email: string, name: string) {
   console.log(`[AUTH_EMAIL] Sending welcome to ${email}`);
-  
+
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; background: #f6f6f6; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
