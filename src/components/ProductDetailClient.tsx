@@ -24,7 +24,8 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
 
   const name = getLocalized(project, 'name', language);
   const rawDescription = getLocalized(project, 'description', language);
-  const description = cleanDescription(rawDescription);
+  const cleaned = cleanDescription(rawDescription);
+  const description = cleaned; // Keep description for backwards compatibility in other places if needed, but 'cleaned' is used in the template.
   const imageUrl = project.imageUrl;
   
   const specs = getProjectSpecs(project, t);
@@ -67,23 +68,24 @@ export default function ProductDetailClient({ project }: ProductDetailClientProp
               </div>
               <h1 className="text-3xl font-bold mb-4">{name}</h1>
               <div className="text-gray-600 dark:text-gray-400 text-base leading-relaxed mb-8">
-                <div className="mt-4">
-                  <p className="leading-relaxed">{description}</p>
+                <div className="mt-4 text-sm leading-relaxed space-y-2">
+                  <p>{cleaned}</p>
 
-                  <div className="mt-3 text-sm space-y-1 opacity-90">
-                    <p>
-                      <span className="font-medium">{t("materialType")}:</span> Structural
-                    </p>
-                    <p>
-                      <span className="font-medium">{t("standardCompliance")}:</span> GOST Certified Standards
-                    </p>
-                    <p>
-                      <span className="font-medium">{t("primaryUsage")}:</span> {specs.usage}
-                    </p>
-                    <p>
-                      <span className="font-medium">{t("dimensions")}:</span> {specs.dimensions}
-                    </p>
-                  </div>
+                  <p>
+                    <strong>{t("materialType")}:</strong> Structural
+                  </p>
+
+                  <p>
+                    <strong>{t("standardCompliance")}:</strong> GOST Certified Standards
+                  </p>
+
+                  <p>
+                    <strong>{t("primaryUsage")}:</strong> {specs.usage}
+                  </p>
+
+                  <p>
+                    <strong>{t("dimensions")}:</strong> {specs.dimensions}
+                  </p>
                 </div>
               </div>
 
