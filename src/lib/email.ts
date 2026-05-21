@@ -4,7 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendOrderEmail(order: any, type: string) {
   console.log(`[EMAIL] Attempting to send ${type} email for order ${order.id}`);
-  
+
   const subjectMap: any = {
     confirmed: "Order Confirmed",
     processing: "Order Processing",
@@ -61,9 +61,8 @@ export async function sendOrderEmail(order: any, type: string) {
           <h3 style="color: #000; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-top: 0;">${subjectMap[type]}</h3>
           <p style="font-size: 0.9rem;"><strong>Order ID:</strong> ${order.id}</p>
 
-          ${
-            type === "confirmed"
-              ? `
+          ${type === "confirmed"
+      ? `
           <div style="margin-top: 25px;">
             <h4 style="margin-bottom: 15px; text-transform: uppercase; font-size: 0.8rem; color: #666;">Invoice Details</h4>
             <table style="width: 100%; border-collapse: collapse;">
@@ -76,16 +75,16 @@ export async function sendOrderEmail(order: any, type: string) {
               </thead>
               <tbody>
                 ${(order.order_items || order.items || [])
-                  .map(
-                    (item: any) => `
+        .map(
+          (item: any) => `
                   <tr style="border-bottom: 1px solid #eee;">
                     <td style="padding: 12px; font-size: 0.9rem;">${item.name}</td>
                     <td style="padding: 12px; text-align: center; font-size: 0.9rem;">${item.quantity}</td>
                     <td style="padding: 12px; text-align: right; font-size: 0.9rem; font-weight: bold;">${Number(item.price || 0).toLocaleString()} KGS</td>
                   </tr>
                 `
-                  )
-                  .join("")}
+        )
+        .join("")}
               </tbody>
             </table>
 
@@ -107,24 +106,23 @@ export async function sendOrderEmail(order: any, type: string) {
             </div>
           </div>
           `
-              : `
+      : `
           <div style="background: #f9f9f9; border-left: 4px solid #000; padding: 20px; margin: 20px 0;">
             <p style="margin: 0; font-size: 1.1rem;">Status Update: <strong>${subjectMap[type]}</strong></p>
           </div>
           <p style="font-size: 0.9rem; color: #666;">Visit our tracking page to see real-time updates on your shipment.</p>
           `
-          }
+    }
 
-          ${
-            type === "delivered"
-              ? `
+          ${type === "delivered"
+      ? `
           <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; color: #64748b; font-size: 0.85rem;">
             <p style="margin-bottom: 5px;">Thank you for shopping with InTUITMarket.</p>
             <p>We appreciate your trust and look forward to serving you again.</p>
           </div>
           `
-              : ""
-          }
+      : ""
+    }
         </div>
 
         <!-- FOOTER -->
@@ -163,7 +161,7 @@ export async function sendOrderEmail(order: any, type: string) {
 
 export async function sendDeleteAccountEmail(email: string) {
   console.log(`[EMAIL] Sending account deletion notice to ${email}`);
-  
+
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; background: #f6f6f6; padding: 20px; color: #333;">
       <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
